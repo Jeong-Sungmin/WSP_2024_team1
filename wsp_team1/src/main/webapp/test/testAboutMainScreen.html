@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>동화책 제작</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 리셋 및 폰트 설정 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .selection {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .selection label {
+            margin-right: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+
+        .selection input[type="radio"] {
+            margin-right: 10px;
+            accent-color: #3498db;
+            cursor: pointer;
+        }
+
+        .selection label:hover {
+            color: #3498db;
+        }
+
+        /* 입문용 섹션 */
+        .attributes-section {
+            display: none;
+            margin-bottom: 30px;
+        }
+
+        .attributes-section.active {
+            display: block;
+        }
+
+        .attributes-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .attributes-group {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* 세로선 스타일 */
+        .attributes-group::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 1px;
+            background-color: #ccc;
+            transform: translateX(-50%);
+        }
+
+        .attributes-left,
+        .attributes-right {
+            width: 48%;
+        }
+
+        .attribute-group {
+            margin-bottom: 20px;
+        }
+
+        .attribute-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .option {
+            width: 45%;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+            accent-color: #3498db;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            color: #3498db;
+        }
+
+        /* 전문가용 섹션 */
+        .expert-section {
+            display: none;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .expert-section.active {
+            display: block;
+        }
+
+        .expert-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .expert-section textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 5px;
+            font-size: 1em;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .expert-section textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* 추가 속성 입력란 (입문용 전용) */
+        .additional {
+            display: none;
+            margin-bottom: 30px;
+        }
+
+        .additional.active {
+            display: block;
+        }
+
+        .additional label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .additional input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .additional input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* 동화 만들기 버튼 */
+        .create-button {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .create-button button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .create-button button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 1000px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .attributes-group::before {
+                display: none;
+            }
+            .attributes-left,
+            .attributes-right {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .option {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .selection {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .selection label {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .create-button {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>동화책 제작</h1>
+        <div class="selection">
+            <label>
+                <input type="radio" name="type" value="expert">
+                전문가용
+            </label>
+            <label>
+                <input type="radio" name="type" value="beginner" checked>
+                입문용
+            </label>
+        </div>
+
+        <!-- 입문용 섹션 -->
+        <div class="attributes-section active" id="attributes-section">
+            <h2>세상을 빛나게 할 당신의 이야기를 만들어 주세요.</h2>
+            <div class="attributes-group">
+                <div class="attributes-left">
+                    <!-- 속성 그룹 1 -->
+                    <div class="attribute-group">
+                        <label>성별</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="gender" value="남자">
+                                남자
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="gender" value="여자">
+                                여자
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 2 -->
+                    <div class="attribute-group">
+                        <label>나이</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="age" value="어린이">
+                                어린이
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="age" value="어른">
+                                어른
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 3 -->
+                    <div class="attribute-group">
+                        <label>장르</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="genre" value="모험">
+                                모험
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="genre" value="판타지">
+                                판타지
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="genre" value="로맨스">
+                                로맨스
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="genre" value="스릴러">
+                                스릴러
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 4 -->
+                    <div class="attribute-group">
+                        <label>주인공의 직업</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="occupation" value="학생">
+                                학생
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="occupation" value="직장인">
+                                직장인
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="occupation" value="모험가">
+                                모험가
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 5 -->
+                    <div class="attribute-group">
+                        <label>배경 설정</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="background" value="현대">
+                                현대
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="background" value="과거">
+                                과거
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="background" value="미래">
+                                미래
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 6 -->
+                    <div class="attribute-group">
+                        <label>스토리 톤</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="tone" value="유머러스">
+                                유머러스
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="tone" value="진지">
+                                진지
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 7 -->
+                    <div class="attribute-group">
+                        <label>스토리 길이</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="length" value="짧은">
+                                짧은
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="length" value="긴">
+                                긴
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 8 -->
+                    <div class="attribute-group">
+                        <label>스토리 목표</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="goal" value="교육">
+                                교육
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="goal" value="오락">
+                                오락
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 9 -->
+                    <div class="attribute-group">
+                        <label>주제</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="theme" value="우정">
+                                우정
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="theme" value="사랑">
+                                사랑
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="theme" value="용기">
+                                용기
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 10 -->
+                    <div class="attribute-group">
+                        <label>스토리 시점</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="perspective" value="1인칭">
+                                1인칭
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="perspective" value="3인칭">
+                                3인칭
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="attributes-right">
+                    <!-- 속성 그룹 11 -->
+                    <div class="attribute-group">
+                        <label>플롯 구조</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="plot" value="선형">
+                                선형
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="plot" value="비선형">
+                                비선형
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 12 -->
+                    <div class="attribute-group">
+                        <label>갈등 유형</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="conflict" value="내부">
+                                내부
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="conflict" value="외부">
+                                외부
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 13 -->
+                    <div class="attribute-group">
+                        <label>스토리 마무리</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="ending" value="해피엔딩">
+                                해피엔딩
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="ending" value="비극">
+                                비극
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 14 -->
+                    <div class="attribute-group">
+                        <label>등장인물 수</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="characters" value="소수">
+                                소수
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="characters" value="다수">
+                                다수
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 15 -->
+                    <div class="attribute-group">
+                        <label>동물 등장 여부</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="animals" value="있음">
+                                있음
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="animals" value="없음">
+                                없음
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 16 -->
+                    <div class="attribute-group">
+                        <label>마법 요소</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="magic" value="있음">
+                                있음
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="magic" value="없음">
+                                없음
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 17 -->
+                    <div class="attribute-group">
+                        <label>스토리 장소</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="location" value="도시">
+                                도시
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="location" value="시골">
+                                시골
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="location" value="해변">
+                                해변
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="location" value="숲">
+                                숲
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 18 -->
+                    <div class="attribute-group">
+                        <label>주요 색상</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="colors" value="다채로운">
+                                다채로운
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="colors" value="단색">
+                                단색
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 19 -->
+                    <div class="attribute-group">
+                        <label>스토리 난이도</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="difficulty" value="쉬움">
+                                쉬움
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="difficulty" value="어려움">
+                                어려움
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 속성 그룹 20 -->
+                    <div class="attribute-group">
+                        <label>삽화 포함 여부</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="illustration" value="있음">
+                                있음
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="illustration" value="없음">
+                                없음
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 추가 속성 입력란 (입문용 전용) -->
+            <div class="additional active">
+                <label for="additional-attributes">추가로 입력하고 싶은 속성이 있으신가요?</label>
+                <input type="text" id="additional-attributes" name="additional-attributes" placeholder="추가 속성을 입력하세요">
+            </div>
+        </div>
+
+        <!-- 전문가용 섹션 -->
+        <div class="expert-section" id="expert-section">
+            <h2>세상을 빛나게 할 당신의 이야기를 만들어 주세요.</h2>
+            <textarea placeholder="당신의 이야기를 입력하세요..."></textarea>
+        </div>
+
+        <!-- 동화 만들기 버튼 -->
+        <div class="create-button">
+            <button type="button">동화 만들기</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeRadios = document.querySelectorAll('input[name="type"]');
+            const attributesSection = document.getElementById('attributes-section');
+            const expertSection = document.getElementById('expert-section');
+            const additionalSection = document.querySelector('.additional');
+
+            // Toggle sections based on the selected type
+            function toggleSections() {
+                const selectedType = document.querySelector('input[name="type"]:checked').value;
+                if (selectedType === 'expert') {
+                    attributesSection.classList.remove('active');
+                    expertSection.classList.add('active');
+                    additionalSection.classList.remove('active');
+                } else {
+                    expertSection.classList.remove('active');
+                    attributesSection.classList.add('active');
+                    additionalSection.classList.add('active');
+                }
+            }
+
+            // Initialize sections on page load
+            toggleSections();
+
+            // Add event listeners to radio buttons
+            typeRadios.forEach(radio => {
+                radio.addEventListener('change', toggleSections);
+            });
+        });
+    </script>
+</body>
+</html>
