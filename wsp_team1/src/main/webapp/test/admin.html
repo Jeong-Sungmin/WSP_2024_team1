@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>동화책 제작 관리자 페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 리셋 및 폰트 설정 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #dfe6e9;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 30px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .form-group label {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .form-group label {
+                font-size: 0.9em;
+            }
+
+            .form-group input[type="text"] {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>관리자 페이지</h1>
+        <form class="admin-form">
+            <!-- 총 30개의 속성 그룹 -->
+            <div class="form-group">
+                <label for="attribute-1">속성 1:</label>
+                <input type="text" id="attribute-1" name="attribute-1" placeholder="속성 1을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-2">속성 2:</label>
+                <input type="text" id="attribute-2" name="attribute-2" placeholder="속성 2을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-3">속성 3:</label>
+                <input type="text" id="attribute-3" name="attribute-3" placeholder="속성 3을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-4">속성 4:</label>
+                <input type="text" id="attribute-4" name="attribute-4" placeholder="속성 4을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-5">속성 5:</label>
+                <input type="text" id="attribute-5" name="attribute-5" placeholder="속성 5을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-6">속성 6:</label>
+                <input type="text" id="attribute-6" name="attribute-6" placeholder="속성 6을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-7">속성 7:</label>
+                <input type="text" id="attribute-7" name="attribute-7" placeholder="속성 7을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-8">속성 8:</label>
+                <input type="text" id="attribute-8" name="attribute-8" placeholder="속성 8을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-9">속성 9:</label>
+                <input type="text" id="attribute-9" name="attribute-9" placeholder="속성 9을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-10">속성 10:</label>
+                <input type="text" id="attribute-10" name="attribute-10" placeholder="속성 10을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-11">속성 11:</label>
+                <input type="text" id="attribute-11" name="attribute-11" placeholder="속성 11을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-12">속성 12:</label>
+                <input type="text" id="attribute-12" name="attribute-12" placeholder="속성 12을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-13">속성 13:</label>
+                <input type="text" id="attribute-13" name="attribute-13" placeholder="속성 13을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-14">속성 14:</label>
+                <input type="text" id="attribute-14" name="attribute-14" placeholder="속성 14을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-15">속성 15:</label>
+                <input type="text" id="attribute-15" name="attribute-15" placeholder="속성 15을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-16">속성 16:</label>
+                <input type="text" id="attribute-16" name="attribute-16" placeholder="속성 16을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-17">속성 17:</label>
+                <input type="text" id="attribute-17" name="attribute-17" placeholder="속성 17을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-18">속성 18:</label>
+                <input type="text" id="attribute-18" name="attribute-18" placeholder="속성 18을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-19">속성 19:</label>
+                <input type="text" id="attribute-19" name="attribute-19" placeholder="속성 19을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-20">속성 20:</label>
+                <input type="text" id="attribute-20" name="attribute-20" placeholder="속성 20을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-21">속성 21:</label>
+                <input type="text" id="attribute-21" name="attribute-21" placeholder="속성 21을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-22">속성 22:</label>
+                <input type="text" id="attribute-22" name="attribute-22" placeholder="속성 22을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-23">속성 23:</label>
+                <input type="text" id="attribute-23" name="attribute-23" placeholder="속성 23을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-24">속성 24:</label>
+                <input type="text" id="attribute-24" name="attribute-24" placeholder="속성 24을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-25">속성 25:</label>
+                <input type="text" id="attribute-25" name="attribute-25" placeholder="속성 25을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-26">속성 26:</label>
+                <input type="text" id="attribute-26" name="attribute-26" placeholder="속성 26을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-27">속성 27:</label>
+                <input type="text" id="attribute-27" name="attribute-27" placeholder="속성 27을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-28">속성 28:</label>
+                <input type="text" id="attribute-28" name="attribute-28" placeholder="속성 28을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-29">속성 29:</label>
+                <input type="text" id="attribute-29" name="attribute-29" placeholder="속성 29을 입력하세요">
+            </div>
+            <div class="form-group">
+                <label for="attribute-30">속성 30:</label>
+                <input type="text" id="attribute-30" name="attribute-30" placeholder="속성 30을 입력하세요">
+            </div>
+        </form>
+    </div>
+</body>
+</html>
