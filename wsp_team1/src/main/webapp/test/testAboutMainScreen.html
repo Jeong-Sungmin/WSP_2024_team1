@@ -30,6 +30,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             max-width: 1200px;
             width: 100%;
+            position: relative;
         }
 
         h1 {
@@ -74,10 +75,31 @@
             display: block;
         }
 
-        .attributes-section h2 {
-            font-size: 1.5em;
+        .attributes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .attributes-header h2 {
+            font-size: 1.5em;
             color: #2c3e50;
+        }
+
+        .one-click-button {
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .one-click-button:hover {
+            background-color: #27ae60;
         }
 
         .attributes-group {
@@ -226,6 +248,96 @@
             transform: translateY(-2px);
         }
 
+        /* 원클릭 제작 화면 */
+        .one-click-section {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f4f8;
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .one-click-section.active {
+            display: flex;
+        }
+
+        .one-click-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .progress-indicator {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .one-click-content {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .one-click-option {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1.5em;
+            color: #fff;
+            transition: background-color 0.3s;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* 특정 색상 클래스 */
+        .color-1 { background-color: #ADD8E6; } /* 파스텔 블루 */
+        .color-2 { background-color: #FF6961; } /* 빨간색 */
+        .color-3 { background-color: #FFA500; } /* 주황색 */
+        .color-4 { background-color: #77DD77; } /* 초록색 */
+
+        .one-click-footer {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 10px 0;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .arrow-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .arrow-buttons button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .arrow-buttons button:hover {
+            background-color: #2980b9;
+        }
+
         /* 반응형 디자인 */
         @media (max-width: 1200px) {
             .container {
@@ -263,6 +375,25 @@
             .create-button {
                 justify-content: center;
             }
+
+            .one-click-content {
+                flex-direction: column;
+            }
+
+            .one-click-option {
+                flex: 1 1 100%;
+            }
+
+            .one-click-footer {
+                flex-direction: column;
+                gap: 10px;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .arrow-buttons {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -282,7 +413,10 @@
 
         <!-- 입문용 섹션 -->
         <div class="attributes-section active" id="attributes-section">
-            <h2>세상을 빛나게 할 당신의 이야기를 만들어 주세요.</h2>
+            <div class="attributes-header">
+                <h2>세상을 빛나게 할 당신의 이야기를 만들어 주세요.</h2>
+                <button class="one-click-button" id="one-click-button">원클릭 제작</button>
+            </div>
             <div class="attributes-group">
                 <div class="attributes-left">
                     <!-- 속성 그룹 1 -->
@@ -617,6 +751,21 @@
         </div>
     </div>
 
+    <!-- 원클릭 제작 화면 -->
+    <div class="one-click-section" id="one-click-section">
+        <div class="one-click-title">선택지를 골라주세요.</div>
+        <div class="progress-indicator" id="progress-indicator">1/20</div>
+        <div class="one-click-content" id="one-click-content">
+            <!-- 선택지가 여기서 동적으로 표시됩니다 -->
+        </div>
+        <div class="one-click-footer">
+            <div class="arrow-buttons">
+                <button id="prev-arrow" disabled>◀ 이전</button>
+                <button id="next-arrow" disabled>다음 ▶</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const typeRadios = document.querySelectorAll('input[name="type"]');
@@ -624,7 +773,45 @@
             const expertSection = document.getElementById('expert-section');
             const additionalSection = document.querySelector('.additional');
 
-            // Toggle sections based on the selected type
+            const oneClickButton = document.getElementById('one-click-button');
+            const oneClickSection = document.getElementById('one-click-section');
+            const oneClickContent = document.getElementById('one-click-content');
+            const progressIndicator = document.getElementById('progress-indicator');
+            const prevArrow = document.getElementById('prev-arrow');
+            const nextArrow = document.getElementById('next-arrow');
+
+            const createButton = document.querySelector('.create-button button');
+
+            // Define all attribute groups
+            const attributeGroups = [
+                { name: 'gender', label: '성별', options: ['남자', '여자'] },
+                { name: 'age', label: '나이', options: ['어린이', '어른'] },
+                { name: 'genre', label: '장르', options: ['모험', '판타지', '로맨스', '스릴러'] },
+                { name: 'occupation', label: '주인공의 직업', options: ['학생', '직장인', '모험가'] },
+                { name: 'background', label: '배경 설정', options: ['현대', '과거', '미래'] },
+                { name: 'tone', label: '스토리 톤', options: ['유머러스', '진지'] },
+                { name: 'length', label: '스토리 길이', options: ['짧은', '긴'] },
+                { name: 'goal', label: '스토리 목표', options: ['교육', '오락'] },
+                { name: 'theme', label: '주제', options: ['우정', '사랑', '용기'] },
+                { name: 'perspective', label: '스토리 시점', options: ['1인칭', '3인칭'] },
+                { name: 'plot', label: '플롯 구조', options: ['선형', '비선형'] },
+                { name: 'conflict', label: '갈등 유형', options: ['내부', '외부'] },
+                { name: 'ending', label: '스토리 마무리', options: ['해피엔딩', '비극'] },
+                { name: 'characters', label: '등장인물 수', options: ['소수', '다수'] },
+                { name: 'animals', label: '동물 등장 여부', options: ['있음', '없음'] },
+                { name: 'magic', label: '마법 요소', options: ['있음', '없음'] },
+                { name: 'location', label: '스토리 장소', options: ['도시', '시골', '해변', '숲'] },
+                { name: 'colors', label: '주요 색상', options: ['다채로운', '단색'] },
+                { name: 'difficulty', label: '스토리 난이도', options: ['쉬움', '어려움'] },
+                { name: 'illustration', label: '삽화 포함 여부', options: ['있음', '없음'] },
+                // Add more attribute groups if needed
+            ];
+
+            let currentAttributeIndex = 0;
+            let totalAttributes = attributeGroups.length;
+            let selections = {};
+
+            // Function to toggle sections based on the selected type
             function toggleSections() {
                 const selectedType = document.querySelector('input[name="type"]:checked').value;
                 if (selectedType === 'expert') {
@@ -644,6 +831,157 @@
             // Add event listeners to radio buttons
             typeRadios.forEach(radio => {
                 radio.addEventListener('change', toggleSections);
+            });
+
+            // Open one-click selection view
+            oneClickButton.addEventListener('click', function() {
+                currentAttributeIndex = 0;
+                selections = {};
+                oneClickSection.classList.add('active');
+                renderOneClickSelection();
+            });
+
+            // Handle Previous arrow
+            prevArrow.addEventListener('click', function() {
+                if (currentAttributeIndex > 0) {
+                    currentAttributeIndex--;
+                    renderOneClickSelection();
+                }
+            });
+
+            // Handle Next arrow (disabled, as selection is handled by clicking options)
+            nextArrow.addEventListener('click', function() {
+                // No action needed; selection is handled by clicking options
+            });
+
+            // Render the one-click selection screen based on currentAttributeIndex
+            function renderOneClickSelection() {
+                oneClickContent.innerHTML = '';
+                if (currentAttributeIndex < totalAttributes) {
+                    const attribute = attributeGroups[currentAttributeIndex];
+                    const options = attribute.options;
+                    const numOptions = options.length;
+
+                    // Determine layout based on number of options
+                    let layout = [];
+                    if (numOptions === 1) {
+                        layout.push('full');
+                    } else if (numOptions === 2) {
+                        layout.push('half', 'half');
+                    } else if (numOptions === 3) {
+                        layout.push('quarter', 'quarter', 'quarter', 'empty');
+                    } else if (numOptions === 4) {
+                        layout.push('quarter', 'quarter', 'quarter', 'quarter');
+                    } else {
+                        // For 5 or more, split into four quadrants and handle pagination
+                        layout.push('quarter', 'quarter', 'quarter', 'quarter');
+                        // Additional selections can be handled with pagination if needed
+                    }
+
+                    // Assign options to layout
+                    for (let i = 0; i < layout.length; i++) {
+                        if (layout[i] !== 'empty' && i < numOptions) {
+                            const option = options[i];
+                            const optionDiv = document.createElement('div');
+                            optionDiv.classList.add('one-click-option');
+
+                            // Assign specific colors based on option index
+                            if (i === 0) {
+                                optionDiv.classList.add('color-1'); // 파스텔 블루
+                            } else if (i === 1) {
+                                optionDiv.classList.add('color-2'); // 빨간색
+                            } else if (i === 2) {
+                                optionDiv.classList.add('color-3'); // 주황색
+                            } else if (i === 3) {
+                                optionDiv.classList.add('color-4'); // 초록색
+                            }
+
+                            if (layout[i] === 'full') {
+                                optionDiv.style.flex = '1 1 100%';
+                                optionDiv.style.height = '100%';
+                            } else if (layout[i] === 'half') {
+                                optionDiv.style.flex = '1 1 50%';
+                                optionDiv.style.height = '100%';
+                            } else if (layout[i] === 'quarter') {
+                                optionDiv.style.flex = '1 1 50%';
+                                optionDiv.style.height = '50%';
+                            }
+
+                            optionDiv.textContent = option;
+                            optionDiv.addEventListener('click', function() {
+                                selections[attribute.name] = option;
+                                currentAttributeIndex++;
+                                if (currentAttributeIndex < totalAttributes) {
+                                    renderOneClickSelection();
+                                } else {
+                                    // All selections done
+                                    applySelections();
+                                    oneClickSection.classList.remove('active');
+                                    toggleSections();
+                                }
+                            });
+
+                            oneClickContent.appendChild(optionDiv);
+                        } else {
+                            // Empty quadrant
+                            const emptyDiv = document.createElement('div');
+                            if (layout[i] === 'full') {
+                                emptyDiv.style.flex = '1 1 100%';
+                                emptyDiv.style.height = '100%';
+                            } else if (layout[i] === 'half') {
+                                emptyDiv.style.flex = '1 1 50%';
+                                emptyDiv.style.height = '100%';
+                            } else if (layout[i] === 'quarter') {
+                                emptyDiv.style.flex = '1 1 50%';
+                                emptyDiv.style.height = '50%';
+                            }
+                            oneClickContent.appendChild(emptyDiv);
+                        }
+                    }
+
+                    // Update progress
+                    progressIndicator.textContent = `${currentAttributeIndex + 1}/${totalAttributes}`;
+
+                    // Disable prev arrow on first step
+                    prevArrow.disabled = currentAttributeIndex === 0;
+
+                    // Optionally, enable next arrow if needed (here, next is handled by option clicks)
+                    nextArrow.disabled = true;
+                }
+            }
+
+            // Apply selections to the main attributes section
+            function applySelections() {
+                attributeGroups.forEach(attribute => {
+                    const selectedValue = selections[attribute.name];
+                    if (selectedValue) {
+                        const radio = document.querySelector(`input[name="${attribute.name}"][value="${selectedValue}"]`);
+                        if (radio) {
+                            radio.checked = true;
+                        }
+                    }
+                });
+            }
+
+            // Handle "동화 만들기" button click
+            createButton.addEventListener('click', function() {
+                const selectedType = document.querySelector('input[name="type"]:checked').value;
+                if (selectedType === 'beginner') {
+                    const selectedAttributes = {};
+                    attributeGroups.forEach(attribute => {
+                        const selectedOption = document.querySelector(`input[name="${attribute.name}"]:checked`);
+                        if (selectedOption) {
+                            selectedAttributes[attribute.label] = selectedOption.value;
+                        }
+                    });
+                    const additionalAttributes = document.getElementById('additional-attributes').value;
+                    // Implement the fairy tale creation logic here
+                    alert(`입문용 선택:\n${JSON.stringify(selectedAttributes, null, 2)}\n추가 속성: ${additionalAttributes}`);
+                } else {
+                    const story = document.querySelector('.expert-section textarea').value;
+                    // Implement the fairy tale creation logic here
+                    alert(`전문가용 입력:\n${story}`);
+                }
             });
         });
     </script>
