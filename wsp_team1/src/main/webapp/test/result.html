@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>동화책 결과</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 리셋 및 폰트 설정 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .book-container {
+            display: flex;
+            width: 80%;
+            height: 90vh;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .page {
+            width: 50%;
+            padding: 20px;
+            position: relative;
+        }
+
+        .left-page {
+            background-color: #e6e6e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-placeholder {
+            width: 90%;
+            height: 90%;
+            border: 2px dashed #bbb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #bbb;
+            font-size: 1.2em;
+        }
+
+        .right-page {
+            padding: 40px 20px 60px 20px; /* 추가 패딩으로 텍스트 공간 확보 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .fairy-tale {
+            font-size: 2em;
+            line-height: 1.4em;
+            max-height: 7em; /* 약 5줄을 표시할 수 있는 높이 */
+            overflow: visible; /* 텍스트가 잘리지 않도록 설정 */
+            display: block;
+        }
+
+        /* 반응형 글자 크기 조정 */
+        @media (max-width: 1200px) {
+            .fairy-tale {
+                font-size: 1.8em;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .fairy-tale {
+                font-size: 1.6em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .fairy-tale {
+                font-size: 1.4em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .fairy-tale {
+                font-size: 1.2em;
+            }
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            width: calc(50% - 40px); /* 양쪽 페이지에 맞게 조정 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .page-number {
+            font-size: 1.5em;
+            color: #555;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navigation-buttons button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            white-space: nowrap; /* 레이블이 분리되지 않도록 설정 */
+        }
+
+        .navigation-buttons button:hover {
+            background-color: #2980b9;
+        }
+
+        /* 재생버튼 스타일 */
+        .play-button {
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            white-space: nowrap; /* 레이블이 분리되지 않도록 설정 */
+        }
+
+        .play-button:hover {
+            background-color: #27ae60;
+        }
+
+        .play-button::before {
+            content: '▶';
+            margin-right: 5px;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .book-container {
+                width: 95%;
+                height: 80vh;
+            }
+
+            .fairy-tale {
+                font-size: 1.5em;
+                max-height: 7em;
+            }
+
+            .footer {
+                padding: 0 10px;
+            }
+
+            .page-number {
+                font-size: 1.2em;
+            }
+
+            .navigation-buttons button,
+            .play-button {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .book-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .page {
+                width: 100%;
+                height: 50vh;
+            }
+
+            .fairy-tale {
+                font-size: 1.2em;
+                max-height: 7em;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px 0;
+            }
+
+            .page-number {
+                margin-bottom: 10px;
+                font-size: 1em;
+            }
+
+            .navigation-buttons {
+                gap: 5px;
+            }
+
+            .navigation-buttons button,
+            .play-button {
+                padding: 6px 10px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="book-container">
+        <!-- 왼쪽 페이지 (이미지 공간) -->
+        <div class="page left-page">
+            <div class="image-placeholder">
+                이미지 영역
+            </div>
+        </div>
+
+        <!-- 오른쪽 페이지 (동화 텍스트) -->
+        <div class="page right-page">
+            <div class="fairy-tale">
+                어느 날, 작은 마을에 사는 토끼가 있었습니다.<br>
+                토끼는 매일 숲을 탐험하며 새로운 친구들을 만났습니다.<br>
+                어느 날, 커다란 나무 아래에서 빛나는 꽃을 발견했어요.<br>
+                그 꽃은 마법의 힘을 가지고 있어, 소원을 들어준다고 했습니다.<br>
+                토끼는 소원을 빌어 마을에 평화를 가져왔답니다.
+            </div>
+            <div class="footer">
+                <div class="page-number">3/14</div>
+                <div class="navigation-buttons">
+                    <button class="play-button">재생</button>
+                    <button>◀ 이전</button>
+                    <button>다음 ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
