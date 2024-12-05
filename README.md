@@ -1,5 +1,20 @@
 # WSP_2024_team1
-
+<h3>작업 디렉토리 설명</h3>
+/node_wsp_team1          # 작업 디렉토리 (/app)
+  ├── Dockerfile         # Docker 환경 정의
+  ├── docker-compose.yml # 서비스 정의
+  ├── index.js           # 백엔드 엔트리 파일 (Express 서버)
+  ├── package.json       # 백엔드 의존성 정의
+  ├── package-lock.json  # 백엔드 의존성 잠금 파일
+  ├── testAboutMainScreen.html # 백엔드에서 제공하는 정적 HTML 파일
+  ├── node_modules       # 백엔드용 의존성 디렉토리 (npm install)
+  └── client/            # 프론트엔드 디렉토리
+      ├── public/        # React의 public 디렉토리
+      ├── src/           # React 소스 코드
+      ├── package.json   # 프론트엔드 의존성 정의
+      ├── node_modules   # 프론트엔드용 의존성 디렉토리 (npm install)
+      ├── build/         # React 빌드 결과 (npm run build)
+      └── ...            # 기타 React 관련 파일
 한국공학대 최우진 교수님의 웹서비스프로그래밍 팀프로젝트 repository
 월목 1팀
 컴퓨터공학과 2020150040 정승민
@@ -42,3 +57,4 @@
 * jps 뷰 페이즈 : 4개 { 어드민 | 비기너 용 선택 페이지, 숙련자 용 선택 페이지, 만든 것 목록 }
 * **사용자에게 동화 만들 정보를 받는다 -> OpenAI 에 넣는다 -> 결과물을 받는다 ->** 동화 페이지 보여준다.
 *     결과물을 받는다 까지가 12.15일까지
+
