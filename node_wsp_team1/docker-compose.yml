@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # 로컬 포트 3000과 컨테이너 포트 3000 연결
+    volumes:
+      - .:/app # 로컬 폴더를 컨테이너와 연결 (코드 변경 자동 반영)
+      - /app/node_modules # node_modules는 컨테이너 내부에서만 유지
+    command: ["npx", "nodemon", "index.js"] # nodemon으로 서버 실행
