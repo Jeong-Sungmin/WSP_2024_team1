@@ -1,27 +1,6 @@
 # WSP_2024_team1
 <h3>작업 디렉토리 설명</h3>
 
-## **client/** (프론트엔드 디렉토리)
-
-- client/
-  - public/                   # React의 정적 파일 디렉토리
-    - index.html             # React의 메인 HTML 파일
-    - favicon.ico            # 애플리케이션 아이콘
-    - ...                    # 기타 정적 파일
-  - src/                      # React 소스 코드
-    - App.css                # 메인 CSS 파일
-    - App.js                 # 메인 React 컴포넌트
-    - index.css              # 글로벌 CSS 파일
-    - index.js               # React 진입점
-    - ...                    # 기타 컴포넌트 및 유틸리티
-  - package.json              # 프론트엔드 의존성 정의
-  - package-lock.json         # 프론트엔드 의존성 잠금 파일
-  - node_modules/             # 프론트엔드 의존성 디렉토리
-  - build/                    # React 빌드 결과
-    - index.html             # 빌드된 메인 HTML 파일
-    - static/                # 빌드된 정적 리소스
-    - ...                    # 기타 빌드 파일
-  - README.md                 # 프로젝트 설명 파일
 
 한국공학대 최우진 교수님의 웹서비스프로그래밍 팀프로젝트 repository
 월목 1팀
