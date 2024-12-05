@@ -1,6 +1,7 @@
 # WSP_2024_team1
 <h3>작업 디렉토리 설명</h3>
-/node_wsp_team1          # 작업 디렉토리 (/app)
+
+<h1>/node_wsp_team1          # 작업 디렉토리 (/app)
   ├── Dockerfile         # Docker 환경 정의
   ├── docker-compose.yml # 서비스 정의
   ├── index.js           # 백엔드 엔트리 파일 (Express 서버)
@@ -14,7 +15,7 @@
       ├── package.json   # 프론트엔드 의존성 정의
       ├── node_modules   # 프론트엔드용 의존성 디렉토리 (npm install)
       ├── build/         # React 빌드 결과 (npm run build)
-      └── ...            # 기타 React 관련 파일
+      └── ...            # 기타 React 관련 파일</h1>
 한국공학대 최우진 교수님의 웹서비스프로그래밍 팀프로젝트 repository
 월목 1팀
 컴퓨터공학과 2020150040 정승민
