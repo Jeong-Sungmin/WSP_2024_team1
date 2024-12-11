@@ -1,5 +1,5 @@
 # Node.js 이미지를 기반으로 시작
-FROM node:16
+FROM node:18
 
 # 컨테이너 내부 작업 디렉토리 설정
 WORKDIR /app
