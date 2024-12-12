@@ -1,11 +1,10 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// public/firebaseConfig.js
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Firebase SDK를 import 합니다. Firebase v9 모듈형 SDK를 사용합니다.
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+
+// Firebase 프로젝트 설정 정보 (Firebase 콘솔에서 확인 가능)
 const firebaseConfig = {
   apiKey: "AIzaSyDikOBIbiOzvaYCP9RyfvDSafWdZUhrbTE",
   authDomain: "wspteam1-5159b.firebaseapp.com",
@@ -16,6 +15,10 @@ const firebaseConfig = {
   measurementId: "G-M9TKHKS6HC",
 };
 
-// Initialize Firebase
+// Firebase 초기화
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+// Firebase를 외부에서 사용할 수 있도록 export 합니다.
+export { auth, provider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup };
