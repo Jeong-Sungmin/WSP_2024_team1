@@ -44,4 +44,83 @@
 * jps 뷰 페이즈 : 4개 { 어드민 | 비기너 용 선택 페이지, 숙련자 용 선택 페이지, 만든 것 목록 }
 * **사용자에게 동화 만들 정보를 받는다 -> OpenAI 에 넣는다 -> 결과물을 받는다 ->** 동화 페이지 보여준다.
 *     결과물을 받는다 까지가 12.15일까지
-
+*     아래 처럼 mvc 패턴으로 구조화 예정
+project-root/
+│
+├── app/
+│   ├── models/
+│   │   ├── storyModel.js        # 동화 데이터 모델
+│   │   ├── userModel.js         # 사용자 데이터 모델
+│   │   ├── ttsModel.js          # TTS 결과 저장 로직
+│   │   └── adminModel.js        # 어드민 관련 데이터 모델
+│   │
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   ├── main.html        # 공통 레이아웃
+│   │   │   └── admin.html       # 어드민 전용 레이아웃
+│   │   ├── pages/
+│   │   │   ├── storyList.html   # 사용자 동화 리스트 페이지
+│   │   │   ├── storyView.html   # 사용자 동화 상세 페이지
+│   │   │   ├── ttsPlayback.html # 사용자 TTS 재생 페이지
+│   │   │   └── admin/
+│   │   │       ├── dashboard.html   # 어드민 대시보드
+│   │   │       ├── manageStories.html # 동화 관리 페이지
+│   │   │       └── manageUsers.html   # 사용자 관리 페이지
+│   │   └── components/
+│   │       ├── storyCard.html   # 동화 카드 컴포넌트
+│   │       ├── ttsButton.html   # TTS 버튼 컴포넌트
+│   │       └── adminNav.html    # 어드민 전용 네비게이션
+│   │
+│   ├── controllers/
+│   │   ├── storyController.js   # 동화 생성/조회 처리
+│   │   ├── ttsController.js     # TTS 요청 처리
+│   │   ├── userController.js    # 사용자 입력 처리
+│   │   └── adminController.js   # 어드민 요청 처리 (대시보드, 사용자/동화 관리)
+│
+├── python-scripts/
+│   ├── generate_image.py        # Google Imagen3로 이미지 생성
+│   ├── generate_text.py         # Gemini API로 텍스트 생성
+│   └── generate_tts.py          # gTTs로 TTS 생성
+│
+├── public/
+│   ├── css/
+│   │   ├── styles.css           # 사용자 메인 스타일
+│   │   ├── responsive.css       # 반응형 스타일
+│   │   └── admin.css            # 어드민 전용 스타일
+│   ├── js/
+│   │   ├── main.js              # 사용자 클라이언트 로직
+│   │   ├── ttsControl.js        # TTS 재생 로직
+│   │   └── admin.js             # 어드민 전용 클라이언트 로직
+│   ├── images/
+│   │   ├── story1.jpg           # 동화 이미지
+│   │   └── story2.jpg           # 동화 이미지
+│   └── audio/
+│       ├── story1.mp3           # TTS 생성된 오디오
+│       └── story2.mp3           # TTS 생성된 오디오
+│
+├── config/
+│   ├── firebaseConfig.js        # Firebase 연결 설정
+│   ├── geminiConfig.json        # Gemini API 설정
+│   └── appConfig.js             # 앱 전역 설정
+│
+├── tests/
+│   ├── unit/
+│   │   ├── modelTests.js        # Model 테스트
+│   │   ├── controllerTests.js   # Controller 테스트
+│   │   ├── pythonIntegrationTests.py # Python 통합 테스트
+│   │   └── adminTests.js        # 어드민 기능 테스트
+│   └── integration/
+│       ├── userFlowTests.js     # 사용자 흐름 테스트
+│       ├── adminFlowTests.js    # 어드민 흐름 테스트
+│
+├── server/
+│   ├── index.js                 # 서버 진입점 (Express.js)
+│   ├── routes/
+│   │   ├── storyRoutes.js       # 사용자 동화 라우팅
+│   │   ├── ttsRoutes.js         # TTS 라우팅
+│   │   └── adminRoutes.js       # 어드민 전용 라우팅
+│   └── utils/
+│       ├── callPython.js        # Python 스크립트 호출 유틸리티
+│       └── responseHandler.js   # API 응답 처리 유틸리티
+│
+└── README.md                    # 프로젝트 설명
