@@ -1,0 +1,269 @@
+/* 
+  스타일 컨셉: "고흐의 별이 빛나는 밤" 느낌의 몽환적 웹 페이지
+  - 깊은 남색과 보랏빛 그라데이션 배경
+  - 부드러운 퍼플과 핑크 포인트
+  - 둥글둥글한 Comfortaa 폰트
+  - 밝은 크림색 텍스트
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap");
+
+:root {
+  /* 색상 변수 */
+  --background-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  --star-gradient-1: radial-gradient(
+    circle at 25% 20%,
+    rgba(185, 147, 214, 0.3),
+    transparent 50%
+  );
+  --star-gradient-2: radial-gradient(
+    circle at 70% 80%,
+    rgba(140, 166, 219, 0.2),
+    transparent 40%
+  );
+  --highlight-gradient: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 175, 189, 0.4),
+    transparent 60%
+  );
+  --text-color: #f5f5dc; /* 밝은 크림색 */
+  --header-footer-color: #b993d6; /* 라벤더 퍼플 */
+  --link-color: #a8e6cf; /* 민트 그린 */
+  --link-hover-color: #ffafbd; /* 연한 핑크 */
+  --button-background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  --button-hover-background: linear-gradient(135deg, #ffafbd 0%, #ff9a9e 100%);
+}
+
+body {
+  font-family: "Comfortaa", cursive;
+  font-size: 18px;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  background: var(--star-gradient-1), var(--star-gradient-2),
+    var(--highlight-gradient), var(--background-gradient);
+  background-blend-mode: screen;
+  overflow-x: hidden;
+  transition: background 1.2s ease;
+}
+
+/* 헤더와 푸터 스타일 */
+header,
+footer {
+  text-align: center;
+  padding: 1.5em 0;
+  position: relative;
+  color: var(--text-color);
+  font-weight: 400;
+}
+
+header::before,
+footer::before {
+  content: "✮";
+  position: absolute;
+  font-size: 2.5em;
+  color: var(--header-footer-color);
+  opacity: 0.3;
+  top: 10px;
+  left: 10px;
+  transition: transform 2s ease-in-out;
+}
+
+header:hover::before,
+footer:hover::before {
+  transform: rotate(360deg);
+}
+
+/* 제목 스타일 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Comfortaa", sans-serif;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  margin: 1em 0 0.5em;
+  color: #b993d6; /* 라벤더 퍼플 */
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 3em;
+  position: relative;
+  display: inline-block;
+}
+
+h1::before {
+  content: "";
+  position: absolute;
+  left: -15px;
+  bottom: -10px;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #ffafbd, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.6;
+  filter: blur(8px);
+  z-index: -1;
+}
+
+/* 문단 텍스트 */
+p {
+  line-height: 1.8;
+  margin: 0.5em 0;
+  color: var(--text-color);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* 링크 스타일 */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.4s ease;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  display: block;
+  margin-top: 2px;
+  background: var(--link-hover-color);
+  transition: width 0.4s ease;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+/* 버튼 스타일 */
+button,
+.btn {
+  background: var(--button-background);
+  border: none;
+  padding: 0.7em 1.5em;
+  font-family: inherit;
+  font-size: 1em;
+  border-radius: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+button:hover,
+.btn:hover {
+  transform: translateY(-5px);
+  background: var(--button-hover-background);
+}
+
+/* 컨테이너 및 카드 스타일 */
+.container,
+.card {
+  background: rgba(44, 83, 100, 0.7);
+  backdrop-filter: blur(8px);
+  padding: 2em;
+  margin: 1.5em auto;
+  border-radius: 25px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  max-width: 700px;
+  color: var(--text-color);
+}
+
+/* 리스트 스타일 */
+ul,
+ol {
+  margin-left: 2em;
+}
+
+ul li::before {
+  content: "✦ ";
+  color: #b993d6; /* 라벤더 퍼플 */
+}
+
+/* 폼 요소 스타일 */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 0.8em;
+  margin: 0.6em 0;
+  border: 2px solid #a8e6cf; /* 민트 그린 */
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  font-family: inherit;
+  color: var(--text-color);
+  outline: none;
+  transition: border 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  border: 2px solid #ffafbd; /* 연한 핑크 */
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffafbd; /* 연한 핑크 */
+}
+
+/* 섹션 스타일 */
+section {
+  padding: 2.5em 1.5em;
+  border-radius: 25px;
+  margin: 1.5em 0;
+  background: linear-gradient(
+    135deg,
+    rgba(13, 44, 77, 0.6) 0%,
+    rgba(44, 83, 100, 0.6) 100%
+  );
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 2.5em;
+  }
+
+  .container,
+  .card {
+    padding: 1.5em;
+    max-width: 90%;
+  }
+
+  button,
+  .btn {
+    padding: 0.6em 1.2em;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  h1 {
+    font-size: 2em;
+  }
+
+  .container,
+  .card {
+    padding: 1em;
+    max-width: 95%;
+  }
+
+  button,
+  .btn {
+    padding: 0.5em 1em;
+    font-size: 0.9em;
+  }
+}
