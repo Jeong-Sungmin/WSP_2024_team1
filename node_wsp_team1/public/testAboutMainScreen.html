@@ -742,12 +742,12 @@
         <!-- 전문가용 섹션 -->
         <div class="expert-section" id="expert-section">
             <h2>세상을 빛나게 할 당신의 이야기를 만들어 주세요.</h2>
-            <textarea placeholder="당신의 이야기를 입력하세요..."></textarea>
+            <textarea id="prompt" placeholder="당신의 이야기를 입력하세요..."></textarea>
         </div>
 
         <!-- 동화 만들기 버튼 -->
         <div class="create-button">
-            <button type="button">동화 만들기</button>
+            <button type="button" id="create-button">동화 만들기</button>
         </div>
     </div>
 
@@ -780,7 +780,7 @@
             const prevArrow = document.getElementById('prev-arrow');
             const nextArrow = document.getElementById('next-arrow');
 
-            const createButton = document.querySelector('.create-button button');
+            const createButton = document.getElementById('create-button');
 
             // Define all attribute groups
             const attributeGroups = [
@@ -804,7 +804,6 @@
                 { name: 'colors', label: '주요 색상', options: ['다채로운', '단색'] },
                 { name: 'difficulty', label: '스토리 난이도', options: ['쉬움', '어려움'] },
                 { name: 'illustration', label: '삽화 포함 여부', options: ['있음', '없음'] },
-                // Add more attribute groups if needed
             ];
 
             let currentAttributeIndex = 0;
@@ -964,23 +963,55 @@
             }
 
             // Handle "동화 만들기" button click
-            createButton.addEventListener('click', function() {
+            createButton.addEventListener('click', async function() {
                 const selectedType = document.querySelector('input[name="type"]:checked').value;
+                let dataToSend = {};
+
                 if (selectedType === 'beginner') {
                     const selectedAttributes = {};
                     attributeGroups.forEach(attribute => {
                         const selectedOption = document.querySelector(`input[name="${attribute.name}"]:checked`);
                         if (selectedOption) {
-                            selectedAttributes[attribute.label] = selectedOption.value;
+                            selectedAttributes[attribute.name] = selectedOption.value;
+                        } else {
+                            selectedAttributes[attribute.name] = ""; // 빈칸 처리
                         }
                     });
                     const additionalAttributes = document.getElementById('additional-attributes').value;
-                    // Implement the fairy tale creation logic here
-                    alert(`입문용 선택:\n${JSON.stringify(selectedAttributes, null, 2)}\n추가 속성: ${additionalAttributes}`);
+                    dataToSend = {
+                        type: selectedType,
+                        attributes: selectedAttributes,
+                        additional: additionalAttributes
+                    };
                 } else {
-                    const story = document.querySelector('.expert-section textarea').value;
-                    // Implement the fairy tale creation logic here
-                    alert(`전문가용 입력:\n${story}`);
+                    const prompt = document.querySelector('.expert-section textarea').value;
+                    dataToSend = {
+                        type: selectedType,
+                        prompt: prompt
+                    };
+                }
+
+                // Send data to the server
+                try {
+                    const response = await fetch('/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(dataToSend)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('서버 응답:', result);
+                        // 여기에서 서버로부터 받은 동화 데이터를 처리합니다.
+                        // 예: 새 페이지로 이동하거나, 현재 페이지에 동화를 표시
+                        window.location.href = `/display?story=${encodeURIComponent(JSON.stringify(result))}`;
+                    } else {
+                        console.error('서버 오류:', response.status);
+                    }
+                } catch (error) {
+                    console.error('전송 오류:', error);
                 }
             });
         });
