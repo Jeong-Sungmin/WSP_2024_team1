@@ -14,65 +14,48 @@
 
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
+            background-color: #f8f9fa;
+            color: #343a40;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
             background-color: #fff;
-            padding: 30px 40px;
+            border: 1px solid #e9ecef;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            max-width: 1200px;
-            width: 100%;
-            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 80%;
+            max-width: 800px;
+            margin-bottom: 30px;
         }
 
-        h1 {
+        h1, h2 {
             text-align: center;
-            font-size: 2.5em;
+            color: #343a40;
             margin-bottom: 20px;
-            color: #2c3e50;
         }
 
         .selection {
             display: flex;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .selection label {
-            margin-right: 30px;
-            font-size: 1.1em;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: color 0.3s;
-        }
-
-        .selection input[type="radio"] {
-            margin-right: 10px;
-            accent-color: #3498db;
+            margin: 0 10px;
             cursor: pointer;
         }
 
-        .selection label:hover {
-            color: #3498db;
-        }
-
-        /* 입문용 섹션 */
-        .attributes-section {
-            display: none;
-            margin-bottom: 30px;
-        }
-
-        .attributes-section.active {
-            display: block;
+        .attributes-section, .expert-section {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .attributes-header {
@@ -82,13 +65,8 @@
             margin-bottom: 20px;
         }
 
-        .attributes-header h2 {
-            font-size: 1.5em;
-            color: #2c3e50;
-        }
-
         .one-click-button {
-            background-color: #2ecc71;
+            background-color: #007bff;
             color: #fff;
             border: none;
             padding: 10px 20px;
@@ -99,42 +77,26 @@
         }
 
         .one-click-button:hover {
-            background-color: #27ae60;
+            background-color: #0056b3;
         }
 
         .attributes-group {
             display: flex;
             justify-content: space-between;
-            position: relative;
         }
 
-        /* 세로선 스타일 */
-        .attributes-group::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 1px;
-            background-color: #ccc;
-            transform: translateX(-50%);
-        }
-
-        .attributes-left,
-        .attributes-right {
+        .attributes-left, .attributes-right {
             width: 48%;
         }
 
         .attribute-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .attribute-group label {
             display: block;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: 500;
-            color: #2c3e50;
+            margin-bottom: 5px;
+            color: #495057;
         }
 
         .options {
@@ -143,191 +105,129 @@
         }
 
         .option {
-            width: 45%;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .option input[type="radio"] {
             margin-right: 10px;
-            accent-color: #3498db;
-            cursor: pointer;
         }
 
-        .option:hover {
-            color: #3498db;
-        }
-
-        /* 전문가용 섹션 */
-        .expert-section {
-            display: none;
-            margin-bottom: 30px;
-            width: 100%;
-        }
-
-        .expert-section.active {
-            display: block;
-        }
-
-        .expert-section h2 {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-
-        .expert-section textarea {
-            width: 100%;
-            height: 300px;
-            padding: 15px;
-            border: 2px solid #dfe6e9;
-            border-radius: 5px;
-            font-size: 1em;
-            resize: vertical;
-            transition: border-color 0.3s;
-        }
-
-        .expert-section textarea:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-
-        /* 추가 속성 입력란 (입문용 전용) */
         .additional {
-            display: none;
-            margin-bottom: 30px;
-        }
-
-        .additional.active {
-            display: block;
+            margin-top: 20px;
         }
 
         .additional label {
             display: block;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: 500;
-            color: #2c3e50;
+            margin-bottom: 5px;
+            color: #495057;
         }
 
         .additional input[type="text"] {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #dfe6e9;
+            padding: 10px;
+            border: 1px solid #ced4da;
             border-radius: 5px;
-            font-size: 1em;
-            transition: border-color 0.3s;
+            margin-bottom: 20px;
         }
 
-        .additional input[type="text"]:focus {
-            border-color: #3498db;
-            outline: none;
+        .expert-section textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            resize: vertical;
         }
 
-        /* 동화 만들기 버튼 */
         .create-button {
-            display: flex;
-            justify-content: flex-end;
+            text-align: center;
         }
 
-        .create-button button {
-            background-color: #3498db;
+        #create-button {
+            background-color: #28a745;
             color: #fff;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1em;
+            padding: 10px 20px;
+            font-size: 1em;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: background-color 0.3s;
         }
 
-        .create-button button:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
+        #create-button:hover {
+            background-color: #218838;
         }
 
-        /* 원클릭 제작 화면 */
+        /* One-click section styles */
         .one-click-section {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #f0f4f8;
-            z-index: 1000;
-            flex-direction: column;
-            justify-content: flex-start;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
+            z-index: 10;
         }
 
         .one-click-section.active {
             display: flex;
         }
 
-        .one-click-title {
-            font-size: 2em;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .progress-indicator {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
         .one-click-content {
-            flex: 1;
-            width: 100%;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            position: relative;
             display: flex;
             flex-wrap: wrap;
-            position: relative;
+            justify-content: center;
+            align-items: center;
         }
 
         .one-click-option {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            flex: 1 1 45%; /* Adjust the width of each option */
+            margin: 5px;
+            padding: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
             cursor: pointer;
-            text-align: center;
-            font-size: 1.5em;
-            color: #fff;
             transition: background-color 0.3s;
-            height: 100%;
-            width: 100%;
+            min-width: 150px; /* Minimum width for each option */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
-        /* 특정 색상 클래스 */
-        .color-1 { background-color: #ADD8E6; } /* 파스텔 블루 */
-        .color-2 { background-color: #FF6961; } /* 빨간색 */
-        .color-3 { background-color: #FFA500; } /* 주황색 */
-        .color-4 { background-color: #77DD77; } /* 초록색 */
+        .one-click-option:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Colors for the options */
+        .one-click-option.color-1 { background-color: #e0f2f7; } /* 파스텔 블루 */
+        .one-click-option.color-2 { background-color: #ffdddd; } /* 빨간색 */
+        .one-click-option.color-3 { background-color: #fff6e0; } /* 주황색 */
+        .one-click-option.color-4 { background-color: #e0f8e0; } /* 초록색 */
 
         .one-click-footer {
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 10px 0;
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
+            margin-top: 20px;
         }
 
         .arrow-buttons {
             display: flex;
-            gap: 10px;
+            justify-content: center;
+            gap: 20px;
         }
 
         .arrow-buttons button {
-            background-color: #3498db;
+            background-color: #6c757d;
             color: #fff;
             border: none;
-            padding: 10px 15px;
+            padding: 10px 20px;
             font-size: 1em;
             border-radius: 5px;
             cursor: pointer;
@@ -335,65 +235,17 @@
         }
 
         .arrow-buttons button:hover {
-            background-color: #2980b9;
+            background-color: #5a6268;
         }
 
-        /* 반응형 디자인 */
-        @media (max-width: 1200px) {
-            .container {
-                max-width: 1000px;
-            }
+        .arrow-buttons button:disabled {
+            background-color: #ced4da;
+            cursor: default;
         }
-
-        @media (max-width: 992px) {
-            .attributes-group::before {
-                display: none;
-            }
-            .attributes-left,
-            .attributes-right {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .option {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .selection {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .selection label {
-                margin-right: 0;
-                margin-bottom: 15px;
-            }
-
-            .create-button {
-                justify-content: center;
-            }
-
-            .one-click-content {
-                flex-direction: column;
-            }
-
-            .one-click-option {
-                flex: 1 1 100%;
-            }
-
-            .one-click-footer {
-                flex-direction: column;
-                gap: 10px;
-                bottom: 10px;
-                right: 10px;
-            }
-
-            .arrow-buttons {
-                justify-content: center;
-            }
+        .progress-indicator {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #343a40;
         }
     </style>
 </head>
@@ -962,57 +814,47 @@
                 });
             }
 
-            // Handle "동화 만들기" button click
-            createButton.addEventListener('click', async function() {
+            // "동화 만들기" 버튼 클릭 이벤트 핸들러
+            createButton.addEventListener('click', function() {
                 const selectedType = document.querySelector('input[name="type"]:checked').value;
-                let dataToSend = {};
+                const dataToSend = {};
 
                 if (selectedType === 'beginner') {
                     const selectedAttributes = {};
                     attributeGroups.forEach(attribute => {
                         const selectedOption = document.querySelector(`input[name="${attribute.name}"]:checked`);
-                        if (selectedOption) {
-                            selectedAttributes[attribute.name] = selectedOption.value;
-                        } else {
-                            selectedAttributes[attribute.name] = ""; // 빈칸 처리
-                        }
+                        selectedAttributes[attribute.name] = selectedOption ? selectedOption.value : "";
                     });
-                    const additionalAttributes = document.getElementById('additional-attributes').value;
-                    dataToSend = {
-                        type: selectedType,
-                        attributes: selectedAttributes,
-                        additional: additionalAttributes
-                    };
+                    dataToSend.type = selectedType;
+                    dataToSend.attributes = selectedAttributes;
+                    dataToSend.additional = document.getElementById('additional-attributes').value;
                 } else {
-                    const prompt = document.querySelector('.expert-section textarea').value;
-                    dataToSend = {
-                        type: selectedType,
-                        prompt: prompt
-                    };
+                    dataToSend.type = selectedType;
+                    dataToSend.prompt = document.getElementById('prompt').value;
                 }
 
-                // Send data to the server
-                try {
-                    const response = await fetch('/generate', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(dataToSend)
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        console.log('서버 응답:', result);
-                        // 여기에서 서버로부터 받은 동화 데이터를 처리합니다.
-                        // 예: 새 페이지로 이동하거나, 현재 페이지에 동화를 표시
-                        window.location.href = `/display?story=${encodeURIComponent(JSON.stringify(result))}`;
-                    } else {
-                        console.error('서버 오류:', response.status);
+                // 서버로 POST 요청 보내기
+                fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                } catch (error) {
-                    console.error('전송 오류:', error);
-                }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    // 성공적으로 데이터를 받았을 때의 처리
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // 오류 발생 시 처리
+                });
             });
         });
     </script>
