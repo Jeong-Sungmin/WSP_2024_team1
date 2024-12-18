@@ -6,8 +6,10 @@ const app = express();
 
 // Firebase Admin SDK 초기화
 admin.initializeApp({
-  credential: admin.credential.cert(require("./serviceAccountKey.json")),
-  databaseURL: "https://your-project-id.firebaseio.com", // Firestore를 사용하는 경우
+  credential: admin.credential.cert(
+    require(path.join(__dirname, "serviceAccountKey.json"))
+  ),
+  //databaseURL: "https://your-project-id.firebaseio.com", // Firestore를 사용하는 경우
 });
 
 // Middleware 설정
