@@ -8,5 +8,5 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - ./serviceAccountKey.json:/app/serviceAccountKey.json
+      # - ./serviceAccountKey.json을 따로 배포, node_wsp_team1 폴더에 넣어놓기
     command: node app.js
