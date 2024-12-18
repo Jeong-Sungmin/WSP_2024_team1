@@ -6,6 +6,7 @@ services:
     environment:
       - PORT=3000
     volumes:
-      - .:/usr/src/app
-      - ./serviceAccountKey.json:/usr/src/app/serviceAccountKey.json
+      - .:/app
+      - /app/node_modules
+      # - ./serviceAccountKey.json을 따로 배포, node_wsp_team1 폴더에 넣어놓기
     command: node app.js
