@@ -158,6 +158,16 @@ app.post("/saveUser", async (req, res) => {
   } catch (error) {
     console.error("Error saving user data:", error);
     res.status(500).send("Error saving user data");
+// main스크린에서 동화제작 버튼을 눌렀을 시, controller.js의 함수를 가져와서 실행 후
+// display.html로 리다이렉트 하는 구문
+app.post('/generate', async (req, res) => {
+  try {
+    const result = await fairytale.processFairytaleData(req.body);
+    // display.html로 리다이렉트하고, 생성된 데이터를 쿼리 파라미터로 전달합니다.
+    res.redirect(`/display.html?data=${encodeURIComponent(JSON.stringify(result))}`);
+  } catch (error) {
+    console.error('Error processing fairytale data:', error);
+    res.status(500).send('Error processing fairytale data');
   }
 });
 
