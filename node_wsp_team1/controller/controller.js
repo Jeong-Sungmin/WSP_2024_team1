@@ -1,9 +1,8 @@
 // 필요한 모듈들을 가져옵니다.
+const textToSpeech = require('@google-cloud/text-to-speech');
 const fs = require('fs');
+const util = require('util');
 const { spawn } = require('child_process');
-
-// JSON 파싱을 위한 미들웨어를 설정합니다.
-app.use(express.json());
 
 // 이 함수는 /generate 경로로 POST 요청이 왔을 때 실행됩니다.
 async function processFairytaleData(receivedData) {
@@ -53,21 +52,75 @@ async function processFairytaleData(receivedData) {
   console.log(result.response.text());
 
   // 2. TTS API를 통해 음성 파일을 생성합니다.
-  // 사용자님이 개발하셔야 할 부분: TTS API를 사용하여 동화를 음성 파일로 변환하는 코드를 작성합니다.
-  // 생성된 음성 파일은 audioFile이라는 변수에 저장합니다. (예: audioFile = "audio/audio_1.mp3")
-  // 예시:
-  // const audioFile = generateAudioWithTTS(story);
-  let audioFiles = []; // 임시로 빈 배열을 넣었습니다.
+  // 생성된 음성 파일은 audioFile이라는 변수에 저장합니다. audioFile은 audioFiles[]에 저장됨. (예: audioFile = "audio/audio_1.mp3")
+  const client = new textToSpeech.TextToSpeechClient();
+
+  async function generateAudio(text, index, type) {
+    const request = {
+      input: { text: text },
+      voice: { languageCode: 'ko-KR', ssmlGender: 'NEUTRAL' },
+      audioConfig: { audioEncoding: 'MP3' },
+    };
+
+    const [response] = await client.synthesizeSpeech(request);
+    const writeFile = util.promisify(fs.writeFile);
+    const fileName = type === 'title' ? 'audio/title.mp3' : `audio/section_${index}.mp3`;
+    await writeFile(fileName, response.audioContent, 'binary');
+    console.log(`Audio content written to file: ${fileName}`);
+    return fileName;
+  }
+  
+  let audioFiles = [];
+
+  // 제목 음성 파일 생성
+  const titleAudio = await generateAudio(sections[0], 0, 'title');
+  audioFiles.push(titleAudio);
+
+  // 섹션별 음성 파일 생성
+  for (let i = 1; i < sections.length; i++) {
+    const audioFile = await generateAudio(sections[i], i, 'section');
+    audioFiles.push(audioFile);
+  }
 
   // 3. Image API를 통해 이미지를 생성합니다.
-  // 사용자님이 개발하셔야 할 부분: Image API를 사용하여 동화 내용에 맞는 이미지를 생성하는 코드를 작성합니다.
-  // 생성된 이미지 파일들은 imageFiles라는 배열에 저장합니다. (예: imageFiles = ["image/image_1.jpg", "image/image_2.jpg", ...])
-  // 예시:
-  // const imageFiles = generateImagesWithImageAPI(story);
-  let imageFiles = []; // 임시로 빈 배열을 넣었습니다.
+  function generateImagesWithPython(prompt, numImages, outputDir) {
+    return new Promise((resolve, reject) => {
+      const pythonProcess = spawn('python', ['generate_images.py', prompt, numImages, outputDir]);
+
+      pythonProcess.stdout.on('data', (data) => {
+        const imagePaths = JSON.parse(data.toString());
+        resolve(imagePaths);
+      });
+
+      pythonProcess.stderr.on('data', (data) => {
+        console.error(`Python error: ${data}`);
+        reject(data.toString());
+      });
+
+      pythonProcess.on('close', (code) => {
+        if (code !== 0) {
+          reject(`Python process exited with code ${code}`);
+        }
+      });
+    });
+  }
+
+  const imageOutputDir = 'image'; // 이미지를 저장할 폴더
+
+  // 표지 이미지 생성
+  const coverImagePrompt = `Cover image for a fairytale titled: ${sections[0]}`;
+  const coverImagePaths = await generateImagesWithPython(coverImagePrompt, 1, imageOutputDir);
+  imageFiles.push(coverImagePaths[0]);
+
+  // 각 섹션별 이미지 생성
+  for (let i = 1; i < sections.length; i++) {
+    const sectionImagePrompt = `image related to: ${sections[i]}`;
+    const sectionImagePaths = await generateImagesWithPython(sectionImagePrompt, 1, imageOutputDir);
+    imageFiles.push(sectionImagePaths[0]);
+  }
 
   // 동화를 6개의 섹션으로 나눕니다.
-  const sections = splitStoryIntoSections(story, 6);
+  const sections = splitStoryIntoSections(story);
 
   // 각 섹션별로 이미지와 음성 파일을 생성합니다.
   for (let i = 0; i < sections.length; i++) {
@@ -81,12 +134,6 @@ async function processFairytaleData(receivedData) {
     imageFiles.push(`image/image_${i + 1}.jpg`);
     audioFiles.push(`audio/audio_${i + 1}.mp3`);
   }
-  // 표지 이미지를 생성합니다.
-  // 사용자님이 개발하셔야 할 부분: 표지 이미지를 생성하는 코드를 작성합니다.
-  // 생성된 이미지 파일은 imageFiles 배열의 맨 앞에 추가합니다.
-  // 예시:
-  // imageFiles.unshift(generateCoverImageWithImageAPI(story));
-  imageFiles.unshift('image/cover.jpg'); // 임시로 더미 데이터를 넣었습니다.
 
   // 4. 생성된 동화, 이미지 파일, 음성 파일을 세 번째 파일로 전송합니다.
   // 사용자님이 개발하셔야 할 부분: 생성된 데이터를 세 번째 파일로 전송하는 코드를 작성합니다.
@@ -103,15 +150,33 @@ async function processFairytaleData(receivedData) {
 }
 
 // 동화를 n개의 섹션으로 나누는 함수
-function splitStoryIntoSections(story, n) {
-  const words = story.split(' ');
-  const sectionLength = Math.ceil(words.length / n);
+function splitStoryIntoSections(story) {
   const sections = [];
-  for (let i = 0; i < n; i++) {
-    const start = i * sectionLength;
-    const end = start + sectionLength;
-    sections.push(words.slice(start, end).join(' '));
+  const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
+
+  // 제목 추출
+  const title = lines[0].trim();
+  sections.push(title);
+
+  let currentSectionContent = "";
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith('block_')) {
+      if (currentSectionContent !== "") {
+        sections.push(currentSectionContent);
+        currentSectionContent = "";
+      }
+    } else {
+      currentSectionContent += line + "\n";
+    }
   }
+
+  // 마지막 섹션 추가
+  if (currentSectionContent !== "") {
+    sections.push(currentSectionContent);
+  }
+
   return sections;
 }
 
