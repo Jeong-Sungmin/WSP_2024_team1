@@ -4,11 +4,11 @@ const db = admin.database();
 
 /**
  * 사용자 정보를 Realtime Database에 저장하는 함수
- * @param {Object} user 사용자 정보 객체 (uid, email, name 등)
+ * @param {Object} user - 사용자 정보 객체 (uid, email, name 등)
  * @returns {Promise<void>}
  */
 async function saveUser(user) {
-  console.log("Received user object:", user); // 디버깅을 위한 로그
+  console.log("받은 사용자 객체:", user); // 디버깅을 위한 로그
 
   const userInfo = {
     email: user.email,
@@ -19,16 +19,16 @@ async function saveUser(user) {
   };
 
   // 특정 사용자를 'admin'으로 설정 (예: 특정 이메일)
-  const adminEmails = ["admin@example.com"]; // 관리자의 이메일 목록
+  const adminEmails = ["mis084110@gmail.com"]; // 관리자의 이메일 목록
   if (adminEmails.includes(user.email)) {
     userInfo.role = "admin";
   }
 
   try {
     await db.ref(`users/${user.uid}`).set(userInfo);
-    console.log(`User data saved for UID: ${user.uid}`);
+    console.log(`UID: ${user.uid}의 사용자 데이터가 저장되었습니다.`);
   } catch (error) {
-    console.error(`Error saving user data for UID ${user.uid}:`, error);
+    console.error(`UID: ${user.uid}의 사용자 데이터 저장 중 오류:`, error);
     throw error;
   }
 }

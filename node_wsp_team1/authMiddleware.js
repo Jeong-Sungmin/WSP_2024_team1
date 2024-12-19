@@ -1,17 +1,16 @@
 // authMiddleware.js
-const admin = require("./firebaseAdmin"); // Firebase Admin 초기화 모듈 불러오기
+const admin = require("./firebaseAdmin");
 
 /**
  * 토큰을 검증하고, 인증된 사용자 정보를 req.user에 저장하는 미들웨어
  */
 async function verifyToken(req, res, next) {
-  const authHeader = req.headers.authorization;
+  // 쿠키에서 토큰 추출
+  const token = req.cookies.idToken;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return res.status(401).send("Unauthorized: No token provided");
   }
-
-  const token = authHeader.split("Bearer ")[1];
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
