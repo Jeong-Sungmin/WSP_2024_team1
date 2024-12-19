@@ -5,16 +5,26 @@ const path = require("path");
 const admin = require("firebase-admin");
 const {
   saveUser,
+  addFairyTale,
   createData,
   readData,
   updateData,
   deleteData,
-  deleteFairyTale, // 새로 추가된 함수
+  deleteFairyTale,
+  getFairyTalesByUid,
+  getDetailedFairyTalesByUid,
+  getUsers,
+  updateUser,
 } = require("./controller/dbController");
 const fairytale = require("./controller/controller");
+const { verifyToken, verifyAdmin } = require("./middleware/authMiddleware"); // 미들웨어 import
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Middleware 설정
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json()); // JSON 요청 본문 파싱
+app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 본문 파싱
+
 // Firebase Admin SDK 초기화
 const serviceAccount = require(path.join(__dirname, "serviceAccountKey.json"));
 
@@ -28,11 +38,6 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
-// Middleware 설정
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json()); // JSON 요청 본문 파싱
-app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 본문 파싱
-
 // /home 경로로 HTML 파일 서빙
 app.get("/home", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/testAboutMainScreen.html"));
@@ -44,19 +49,10 @@ app.get("/login", (req, res) => {
 });
 
 // 보호된 라우트 예시: 클라이언트에서 idToken을 전달받아 인증 후 DB 접근
-app.get("/protected", async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).send("Unauthorized: No token provided");
-  }
-
-  const idToken = authHeader.split("Bearer ")[1];
+app.get("/protected", verifyToken, async (req, res) => {
+  const uid = req.user.uid;
 
   try {
-    // idToken 검증
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const uid = decodedToken.uid;
-
     // Realtime Database에서 해당 uid로 사용자 데이터 가져오기
     const userRef = admin.database().ref(`users/${uid}`);
     const snapshot = await userRef.once("value");
@@ -68,8 +64,8 @@ app.get("/protected", async (req, res) => {
     // 사용자 데이터 반환
     res.json(snapshot.val());
   } catch (error) {
-    console.error("Error verifying token or fetching user data:", error);
-    res.status(401).send("Unauthorized: Invalid token");
+    console.error("Error fetching user data:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -89,7 +85,8 @@ app.get("/", (req, res) => {
 });
 
 // 예시: 데이터 생성 라우트
-app.post("/create", async (req, res) => {
+app.post("/create", verifyToken, async (req, res) => {
+  // 보호된 라우트로 변경
   const { path, data } = req.body;
   try {
     await createData(path, data);
@@ -100,7 +97,8 @@ app.post("/create", async (req, res) => {
 });
 
 // 예시: 데이터 읽기 라우트
-app.get("/read", async (req, res) => {
+app.get("/read", verifyToken, async (req, res) => {
+  // 보호된 라우트로 변경
   const { path } = req.query;
   try {
     const data = await readData(path);
@@ -115,7 +113,8 @@ app.get("/read", async (req, res) => {
 });
 
 // 예시: 데이터 업데이트 라우트
-app.patch("/update", async (req, res) => {
+app.patch("/update", verifyToken, async (req, res) => {
+  // 보호된 라우트로 변경
   const { path, updatedFields } = req.body;
   try {
     await updateData(path, updatedFields);
@@ -125,8 +124,30 @@ app.patch("/update", async (req, res) => {
   }
 });
 
+/**
+ * 사용자용: 글로벌 인덱스를 사용하여 동화를 추가하는 라우트
+ * 사용자가 자신의 동화를 생성할 때 호출됩니다.
+ */
+app.post("/addFairyTale", verifyToken, async (req, res) => {
+  const { fairyTaleData } = req.body; // 클라이언트에서 fairyTaleData를 전송해야 함
+
+  if (!fairyTaleData) {
+    return res.status(400).send("fairyTaleData is required");
+  }
+
+  try {
+    const uid = req.user.uid; // verifyToken 미들웨어에서 인증된 사용자의 UID를 가져옴
+    const index = await addFairyTale(uid, fairyTaleData);
+    res.status(200).send(`Fairy tale added successfully with index ${index}`);
+  } catch (error) {
+    console.error("Error adding fairy tale:", error);
+    res.status(500).send("Error adding fairy tale");
+  }
+});
+
 // 예시: 데이터 삭제 라우트
-app.delete("/delete", async (req, res) => {
+app.delete("/delete", verifyToken, async (req, res) => {
+  // 보호된 라우트로 변경
   const { path } = req.body;
   try {
     await deleteData(path);
@@ -163,35 +184,122 @@ app.post("/saveUser", async (req, res) => {
   }
 });
 
-// **새로 추가된 라우트: 특정 동화 삭제**
 /**
- * 특정 사용자의 동화를 삭제하는 라우트
- * 클라이언트에서 idToken, uid, title을 받아 인증 후 삭제
+ * 관리자용: 모든 사용자 목록을 조회하거나 검색하는 라우트
+ * 관리자만 접근 가능
  */
-app.delete("/deleteFairyTale", async (req, res) => {
-  const { idToken, uid, title } = req.body; // 클라이언트에서 idToken, uid, title을 전송해야 함
+app.get("/admin/users", verifyToken, verifyAdmin, async (req, res) => {
+  const searchQuery = req.query.search || "";
 
-  if (!idToken || !uid || !title) {
-    return res.status(400).send("idToken, uid, and title are required");
+  try {
+    const users = await getUsers(searchQuery);
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Error fetching users");
+  }
+});
+
+/**
+ * 관리자용: 특정 사용자의 정보를 업데이트하는 라우트
+ * 관리자만 접근 가능
+ */
+app.patch("/admin/users/:uid", verifyToken, verifyAdmin, async (req, res) => {
+  const uid = req.params.uid;
+  const updatedData = req.body;
+
+  if (!uid || !updatedData) {
+    return res.status(400).send("uid and updatedData are required");
   }
 
   try {
-    // idToken 검증
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const authenticatedUid = decodedToken.uid;
-
-    if (authenticatedUid !== uid) {
-      return res.status(403).send("UID mismatch");
-    }
-
-    // 동화 삭제
-    await deleteFairyTale(uid, title);
-    res.status(200).send("Fairy tale deleted successfully");
+    await updateUser(uid, updatedData);
+    res.status(200).send(`User data updated successfully for UID ${uid}`);
   } catch (error) {
-    console.error("Error deleting fairy tale:", error);
-    res.status(500).send("Error deleting fairy tale");
+    console.error(`Error updating user data for UID ${uid}:`, error);
+    res.status(500).send("Error updating user data");
   }
 });
+
+/**
+ * 관리자용: 특정 사용자의 동화 목록을 조회하는 라우트
+ * 관리자만 접근 가능
+ */
+app.get(
+  "/admin/users/:uid/fairyTales",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    const uid = req.params.uid;
+
+    if (!uid) {
+      return res.status(400).send("uid is required");
+    }
+
+    try {
+      const fairyTales = await getFairyTalesByUid(uid);
+      res.status(200).json(fairyTales);
+    } catch (error) {
+      console.error(`Error fetching fairy tales for UID ${uid}:`, error);
+      res.status(500).send("Error fetching fairy tales");
+    }
+  }
+);
+
+/**
+ * 관리자용: 특정 동화의 상세 정보를 조회하는 라우트
+ * 관리자만 접근 가능
+ */
+app.get(
+  "/admin/fairyTale/:index",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    const index = parseInt(req.params.index, 10);
+
+    if (isNaN(index)) {
+      return res.status(400).send("Valid fairy tale index is required");
+    }
+
+    try {
+      const fairyTale = await getFairyTaleDetails(index);
+      res.status(200).json(fairyTale);
+    } catch (error) {
+      console.error(
+        `Error fetching fairy tale details for index ${index}:`,
+        error
+      );
+      res.status(500).send("Error fetching fairy tale details");
+    }
+  }
+);
+
+/**
+ * 관리자용: 특정 동화를 삭제하는 라우트
+ * 관리자만 접근 가능
+ */
+app.delete(
+  "/admin/fairyTale/:index",
+  verifyToken,
+  verifyAdmin,
+  async (req, res) => {
+    const index = parseInt(req.params.index, 10);
+
+    if (isNaN(index)) {
+      return res.status(400).send("Valid fairy tale index is required");
+    }
+
+    try {
+      await deleteFairyTale(index);
+      res
+        .status(200)
+        .send(`Fairy tale with index ${index} deleted successfully`);
+    } catch (error) {
+      console.error(`Error deleting fairy tale with index ${index}:`, error);
+      res.status(500).send("Error deleting fairy tale");
+    }
+  }
+);
 
 // main스크린에서 동화제작 버튼을 눌렀을 시, controller.js의 함수를 가져와서 실행 후
 // display.html로 리다이렉트 하는 구문
@@ -204,7 +312,7 @@ app.post("/generate", async (req, res) => {
     );
   } catch (error) {
     console.error("Error processing fairytale data:", error);
-    res.status(500).send("Error processing fairytale data");
+    res.status(500).send("Error processing fairy tale data");
   }
 });
 

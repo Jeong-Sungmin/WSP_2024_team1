@@ -2,14 +2,19 @@
   "rules": {
     "users": {
       "$uid": {
-        ".read": "$uid === auth.uid",
-        ".write": "$uid === auth.uid"
+        ".read": "$uid === auth.uid || root.child('users/' + auth.uid + '/role').val() === 'admin'",
+        ".write": "$uid === auth.uid || root.child('users/' + auth.uid + '/role').val() === 'admin'"
       }
     },
     "folks": {
-      ".read": "auth != null",
-      ".write": "auth != null"
+      "counter": {
+        ".read": false,
+        ".write": false
+      },
+      "$index": {
+        ".read": "root.child('folks/' + $index + '/uid').val() === auth.uid || root.child('users/' + auth.uid + '/role').val() === 'admin'",
+        ".write": "root.child('users/' + auth.uid + '/role').val() === 'admin'"
+      }
     }
-    // 기타 경로에 대한 규칙 설정
   }
 }
