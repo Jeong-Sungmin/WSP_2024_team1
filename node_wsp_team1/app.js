@@ -1,8 +1,8 @@
 // app.js
-
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const admin = require("firebase-admin");
+const admin = require("./firebaseAdmin"); // Firebase Admin 초기화 모듈 불러오기
 const {
   saveUser,
   createFairyTale,
@@ -13,33 +13,18 @@ const {
   deleteData,
   deleteFairyTale,
   getFairyTalesByUid,
-  getDetailedFairyTalesByUid,
+  getFairyTaleDetails,
   getUsers,
   updateUser,
   getMyFairyTales,
-  getFairyTaleDetails,
 } = require("./controller/dbController");
 const fairytale = require("./controller/controller");
-const { verifyToken, verifyAdmin } = require("./middleware/authMiddleware"); // 미들웨어 import
+const { verifyToken, verifyAdmin } = require("./authMiddleware");
 const app = express();
 
-// Middleware 설정
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json()); // JSON 요청 본문 파싱
-app.use(express.urlencoded({ extended: true })); // URL-encoded 요청 본문 파싱
-
-// Firebase Admin SDK 초기화
-const serviceAccount = require(path.join(__dirname, "serviceAccountKey.json"));
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL:
-      "https://wspteam1-5159b-default-rtdb.asia-southeast1.firebasedatabase.app/", // 실제 DB URL로 교체
-  });
-}
-
-const db = admin.database();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // /home 경로로 HTML 파일 서빙
 app.get("/home", (req, res) => {
@@ -208,9 +193,8 @@ app.delete("/delete", verifyToken, async (req, res) => {
   }
 });
 
-// 예시: 사용자 정보 저장 라우트 (회원가입 및 로그인 후 호출)
 app.post("/saveUser", async (req, res) => {
-  const { idToken, user } = req.body; // 클라이언트에서 uid로 전송하도록 수정됨
+  const { idToken, user } = req.body;
 
   if (!idToken || !user) {
     return res.status(400).send("idToken and user data are required");
@@ -222,8 +206,23 @@ app.post("/saveUser", async (req, res) => {
     const uid = decodedToken.uid;
 
     if (uid !== user.uid) {
-      // 'uID'에서 'uid'로 변경
       return res.status(403).send("UID mismatch");
+    }
+
+    // 이메일 중복 확인 (이미 사용 중인 이메일인지 확인)
+    const usersSnapshot = await admin
+      .database()
+      .ref("users")
+      .orderByChild("email")
+      .equalTo(user.email)
+      .once("value");
+    if (usersSnapshot.exists()) {
+      const existingUser = Object.values(usersSnapshot.val()).find(
+        (u) => u.uid !== uid
+      );
+      if (existingUser) {
+        return res.status(400).send("이미 사용 중인 이메일입니다.");
+      }
     }
 
     // 사용자 정보 저장
@@ -246,7 +245,6 @@ app.get("/admin/users", verifyToken, verifyAdmin, async (req, res) => {
     const users = await getUsers(searchQuery);
     res.status(200).json(users);
   } catch (error) {
-    console.error("Error fetching users:", error);
     res.status(500).send("Error fetching users");
   }
 });
@@ -267,7 +265,6 @@ app.patch("/admin/users/:uid", verifyToken, verifyAdmin, async (req, res) => {
     await updateUser(uid, updatedData);
     res.status(200).send(`User data updated successfully for UID ${uid}`);
   } catch (error) {
-    console.error(`Error updating user data for UID ${uid}:`, error);
     res.status(500).send("Error updating user data");
   }
 });
@@ -381,6 +378,11 @@ app.post("/generate", async (req, res) => {
     console.error("Error processing fairy tale data:", error);
     res.status(500).send("Error processing fairy tale data");
   }
+});
+
+// 관리자 페이지 라우트 설정 (보호된 라우트)
+app.get("/admin.html", verifyToken, verifyAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, "/private/admin.html"));
 });
 
 // 서버 실행

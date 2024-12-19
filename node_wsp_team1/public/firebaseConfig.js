@@ -1,6 +1,5 @@
 // public/firebaseConfig.js
 
-// Firebase SDK를 import 합니다. Firebase v9 모듈형 SDK를 사용합니다.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import {
   getAuth,
