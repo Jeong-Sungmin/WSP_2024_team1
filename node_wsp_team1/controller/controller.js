@@ -52,6 +52,39 @@ async function processFairytaleData(receivedData) {
   const story = chatSession.sendMessage(prompt); // prompt는 속성
   console.log(result.response.text());
 
+  function splitStoryIntoSections(story) {
+    const sections = [];
+    const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
+  
+    // 제목 추출
+    const title = lines[0].trim();
+    sections.push(title);
+  
+    let currentSectionContent = "";
+  
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith('block_')) {
+        if (currentSectionContent !== "") {
+          sections.push(currentSectionContent);
+          currentSectionContent = "";
+        }
+      } else {
+        currentSectionContent += line + "\n";
+      }
+    }
+  
+    // 마지막 섹션 추가
+    if (currentSectionContent !== "") {
+      sections.push(currentSectionContent);
+    }
+  
+    return sections;
+  }
+
+  // 동화를 6개의 섹션으로 나눕니다.
+  const sections = splitStoryIntoSections(story);
+
   // 2. TTS API를 통해 음성 파일을 생성합니다.
   // 사용자님이 개발하셔야 할 부분: TTS API를 사용하여 동화를 음성 파일로 변환하는 코드를 작성합니다.
   // 생성된 음성 파일은 audioFile이라는 변수에 저장합니다. (예: audioFile = "audio/audio_1.mp3")
@@ -65,9 +98,6 @@ async function processFairytaleData(receivedData) {
   // 예시:
   // const imageFiles = generateImagesWithImageAPI(story);
   let imageFiles = []; // 임시로 빈 배열을 넣었습니다.
-
-  // 동화를 6개의 섹션으로 나눕니다.
-  const sections = splitStoryIntoSections(story, 6);
 
   // 각 섹션별로 이미지와 음성 파일을 생성합니다.
   for (let i = 0; i < sections.length; i++) {
@@ -100,19 +130,6 @@ async function processFairytaleData(receivedData) {
     imageFiles: imageFiles,
     audioFiles: audioFiles,
   };
-}
-
-// 동화를 n개의 섹션으로 나누는 함수
-function splitStoryIntoSections(story, n) {
-  const words = story.split(" ");
-  const sectionLength = Math.ceil(words.length / n);
-  const sections = [];
-  for (let i = 0; i < n; i++) {
-    const start = i * sectionLength;
-    const end = start + sectionLength;
-    sections.push(words.slice(start, end).join(" "));
-  }
-  return sections;
 }
 
 module.exports = { processFairytaleData };
