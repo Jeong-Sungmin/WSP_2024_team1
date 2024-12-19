@@ -5,7 +5,8 @@ const path = require("path");
 const admin = require("firebase-admin");
 const {
   saveUser,
-  addFairyTale,
+  createFairyTale,
+  addFairyTaleFields,
   createData,
   readData,
   updateData,
@@ -15,6 +16,8 @@ const {
   getDetailedFairyTalesByUid,
   getUsers,
   updateUser,
+  getMyFairyTales,
+  getFairyTaleDetails,
 } = require("./controller/dbController");
 const fairytale = require("./controller/controller");
 const { verifyToken, verifyAdmin } = require("./middleware/authMiddleware"); // 미들웨어 import
@@ -125,23 +128,71 @@ app.patch("/update", verifyToken, async (req, res) => {
 });
 
 /**
- * 사용자용: 글로벌 인덱스를 사용하여 동화를 추가하는 라우트
- * 사용자가 자신의 동화를 생성할 때 호출됩니다.
+ * 사용자용: 초기 동화 생성 라우트
+ * 인증된 사용자만 접근 가능
  */
-app.post("/addFairyTale", verifyToken, async (req, res) => {
-  const { fairyTaleData } = req.body; // 클라이언트에서 fairyTaleData를 전송해야 함
+app.post("/createFairyTale", verifyToken, async (req, res) => {
+  const { inputData, selectedType } = req.body;
 
-  if (!fairyTaleData) {
-    return res.status(400).send("fairyTaleData is required");
+  if (!inputData || !selectedType) {
+    return res.status(400).send("inputData and selectedType are required");
   }
 
   try {
-    const uid = req.user.uid; // verifyToken 미들웨어에서 인증된 사용자의 UID를 가져옴
-    const index = await addFairyTale(uid, fairyTaleData);
-    res.status(200).send(`Fairy tale added successfully with index ${index}`);
+    const uid = req.user.uid; // 인증된 사용자의 UID
+    const index = await createFairyTale(uid, inputData, selectedType);
+    res
+      .status(200)
+      .json({ message: "Fairy tale created successfully", index: index });
   } catch (error) {
-    console.error("Error adding fairy tale:", error);
-    res.status(500).send("Error adding fairy tale");
+    console.error("Error creating fairy tale:", error);
+    res.status(500).send("Error creating fairy tale");
+  }
+});
+
+/**
+ * 사용자용: 특정 동화에 필드 추가하는 라우트
+ * 인증된 사용자만 접근 가능
+ */
+app.patch("/addFairyTaleFields/:index", verifyToken, async (req, res) => {
+  const index = parseInt(req.params.index, 10);
+  const { title, img, context, voice } = req.body;
+
+  if (isNaN(index)) {
+    return res.status(400).send("Valid fairy tale index is required");
+  }
+
+  // 최소 하나 이상의 필드가 있어야 합니다.
+  if (!title && !img && !context && !voice) {
+    return res
+      .status(400)
+      .send("At least one field (title, img, context, voice) is required");
+  }
+
+  const fieldsToUpdate = {};
+  if (title) fieldsToUpdate.title = title;
+  if (img) fieldsToUpdate.img = img;
+  if (context) fieldsToUpdate.context = context;
+  if (voice) fieldsToUpdate.voice = voice;
+
+  try {
+    const fairyTale = await getFairyTaleDetails(index);
+    if (fairyTale.uid !== req.user.uid && req.user.role !== "admin") {
+      return res
+        .status(403)
+        .send("Forbidden: You can only modify your own fairy tales");
+    }
+
+    await addFairyTaleFields(index, fieldsToUpdate);
+    res
+      .status(200)
+      .send(`Fields added successfully to fairy tale with index ${index}`);
+  } catch (error) {
+    console.error(
+      `Error adding fields to fairy tale with index ${index}:`,
+      error
+    );
+    res.status(500).send("Error adding fields to fairy tale");
   }
 });
 
@@ -301,6 +352,22 @@ app.delete(
   }
 );
 
+/**
+ * 사용자용: 자신의 모든 동화를 조회하는 라우트
+ * 인증된 사용자만 접근 가능
+ */
+app.get("/user/fairyTales", verifyToken, async (req, res) => {
+  const uid = req.user.uid; // 인증된 사용자의 UID
+
+  try {
+    const fairyTales = await getMyFairyTales(uid);
+    res.status(200).json(fairyTales);
+  } catch (error) {
+    console.error("Error fetching user's fairy tales:", error);
+    res.status(500).send("Error fetching your fairy tales");
+  }
+});
+
 // main스크린에서 동화제작 버튼을 눌렀을 시, controller.js의 함수를 가져와서 실행 후
 // display.html로 리다이렉트 하는 구문
 app.post("/generate", async (req, res) => {
@@ -311,7 +378,7 @@ app.post("/generate", async (req, res) => {
       `/display.html?data=${encodeURIComponent(JSON.stringify(result))}`
     );
   } catch (error) {
-    console.error("Error processing fairytale data:", error);
+    console.error("Error processing fairy tale data:", error);
     res.status(500).send("Error processing fairy tale data");
   }
 });

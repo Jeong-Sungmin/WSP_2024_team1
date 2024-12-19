@@ -4,16 +4,14 @@ const admin = require("firebase-admin");
 const path = require("path");
 
 // Firebase Admin SDK 초기화
-const serviceAccount = require(path.join(
-  __dirname,
-  "../serviceAccountKey.json"
-));
+const serviceAccountPath = path.join(__dirname, "../serviceAccountKey.json");
+const serviceAccount = require(serviceAccountPath);
 
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL:
-      "https://wspteam1-5159b-default-rtdb.asia-southeast1.firebasedatabase.app/", // 실제 DB URL로 교체
+      "https://wspteam1-5159b-default-rtdb.asia-southeast1.firebasedatabase.app/", // 실제 Database URL로 교체
   });
 }
 
@@ -25,7 +23,8 @@ const db = admin.database();
  * @returns {Promise<void>}
  */
 async function saveUser(user) {
-  console.log("Received user object:", user); // 디버깅을 위한 로그 추가
+  console.log("Received user object:", user); // 디버깅을 위한 로그
+
   const userInfo = {
     email: user.email,
     name: user.displayName ? user.displayName : user.email.split("@")[0],
@@ -50,13 +49,15 @@ async function saveUser(user) {
 }
 
 /**
- * 글로벌 카운터를 사용하여 동화를 추가하는 함수
+ * 초기 동화를 생성하는 함수
  * @param {string} uid 사용자 UID
- * @param {object} fairyTaleData 동화 데이터 객체
- * @returns {Promise<number>} 추가된 동화의 인덱스
+ * @param {object} inputData 초기 입력 데이터 객체
+ * @param {string} selectedType 선택된 타입
+ * @returns {Promise<number>} 생성된 동화의 인덱스
  */
-async function addFairyTale(uid, fairyTaleData) {
+async function createFairyTale(uid, inputData, selectedType) {
   const counterRef = db.ref("folks/counter");
+
   try {
     // 트랜잭션을 사용하여 카운터를 안전하게 증가시킵니다.
     const transactionResult = await counterRef.transaction((currentValue) => {
@@ -68,10 +69,14 @@ async function addFairyTale(uid, fairyTaleData) {
       const fairyTalePath = `folks/${newIndex}`;
       const fairyTaleEntry = {
         uid: uid,
-        data: fairyTaleData,
+        createTime: admin.database.ServerValue.TIMESTAMP, // 서버 시간을 사용
+        inputdata: inputData,
+        selectedType: selectedType,
+        // 나중에 추가될 필드들 (title, img, context, voice)는 여기 포함하지 않음
       };
+
       await db.ref(fairyTalePath).set(fairyTaleEntry);
-      console.log(`Fairy tale added at path: ${fairyTalePath}`);
+      console.log(`Fairy tale created at path: ${fairyTalePath}`);
 
       // 사용자별 fairyTales 노드에 인덱스 추가 (조회 최적화를 위해)
       await db.ref(`users/${uid}/fairyTales/${newIndex}`).set(true);
@@ -81,7 +86,27 @@ async function addFairyTale(uid, fairyTaleData) {
       throw new Error("Transaction not committed");
     }
   } catch (error) {
-    console.error(`Error adding fairy tale for UID ${uid}:`, error);
+    console.error(`Error creating fairy tale for UID ${uid}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * 특정 동화에 필드를 추가하거나 업데이트하는 함수
+ * @param {number} index 동화 인덱스
+ * @param {object} fields 추가 또는 업데이트할 필드들 (title, img, context, voice)
+ * @returns {Promise<void>}
+ */
+async function addFairyTaleFields(index, fields) {
+  const fairyTalePath = `folks/${index}`;
+  try {
+    await db.ref(fairyTalePath).update(fields);
+    console.log(`Fields updated for fairy tale at path: ${fairyTalePath}`);
+  } catch (error) {
+    console.error(
+      `Error updating fields for fairy tale with index ${index}:`,
+      error
+    );
     throw error;
   }
 }
@@ -93,6 +118,7 @@ async function addFairyTale(uid, fairyTaleData) {
  */
 async function deleteFairyTale(index) {
   const path = `folks/${index}`;
+
   try {
     // 삭제할 동화의 소유자 UID를 먼저 조회합니다.
     const snapshot = await db.ref(path).once("value");
@@ -145,12 +171,27 @@ async function getFairyTalesByUid(uid) {
 
     const fairyTales = snapshots.map((snapshot) => ({
       index: parseInt(snapshot.key, 10),
-      data: snapshot.val().data,
+      data: snapshot.val(),
     }));
 
     return fairyTales;
   } catch (error) {
     console.error(`Error fetching fairy tales for UID ${uid}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * 사용자 자신의 모든 동화를 조회하는 함수
+ * @param {string} uid 사용자 UID
+ * @returns {Promise<Array<{index: number, data: object}>>}
+ */
+async function getMyFairyTales(uid) {
+  try {
+    const fairyTales = await getFairyTalesByUid(uid);
+    return fairyTales;
+  } catch (error) {
+    console.error(`Error fetching my fairy tales for UID ${uid}:`, error);
     throw error;
   }
 }
@@ -203,21 +244,6 @@ async function updateUser(uid, updatedData) {
     console.log(`User data updated for UID: ${uid}`);
   } catch (error) {
     console.error(`Error updating user data for UID ${uid}:`, error);
-    throw error;
-  }
-}
-
-/**
- * 특정 사용자의 모든 동화를 상세히 조회하는 함수
- * @param {string} uid 사용자 UID
- * @returns {Promise<Array<{index: number, data: object}>>}
- */
-async function getDetailedFairyTalesByUid(uid) {
-  try {
-    const fairyTales = await getFairyTalesByUid(uid);
-    return fairyTales;
-  } catch (error) {
-    console.error(`Error fetching detailed fairy tales for UID ${uid}:`, error);
     throw error;
   }
 }
@@ -315,14 +341,16 @@ async function deleteData(path) {
 
 module.exports = {
   saveUser,
-  addFairyTale, // 글로벌 인덱스를 사용하여 동화를 추가하는 함수
+  createFairyTale, // 초기 동화 생성 함수
+  addFairyTaleFields, // 동화 필드 추가 함수 (여러 필드 한 번에 업데이트 가능)
   deleteFairyTale, // 글로벌 인덱스를 사용하여 동화를 삭제하는 함수
   getFairyTalesByUid, // 특정 사용자의 모든 동화를 조회하는 함수
-  getDetailedFairyTalesByUid, // 특정 사용자의 동화 상세 조회 함수
+  getMyFairyTales, // 사용자 자신의 동화 목록을 조회하는 함수
   getUsers, // 모든 사용자 또는 검색된 사용자 목록을 조회하는 함수
   updateUser, // 특정 사용자의 정보를 업데이트하는 함수
-  createData,
-  readData,
-  updateData,
-  deleteData,
+  getFairyTaleDetails, // 특정 동화의 상세 데이터를 조회하는 함수
+  createData, // 데이터 생성 함수
+  readData, // 데이터 읽기 함수
+  updateData, // 데이터 업데이트 함수
+  deleteData, // 데이터 삭제 함수
 };
