@@ -9,10 +9,12 @@ const {
   readData,
   updateData,
   deleteData,
+  deleteFairyTale, // 새로 추가된 함수
 } = require("./controller/dbController");
-
+const fairytale = require("./controller/controller");
 const app = express();
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Firebase Admin SDK 초기화
 const serviceAccount = require(path.join(__dirname, "serviceAccountKey.json"));
 
@@ -160,16 +162,49 @@ app.post("/saveUser", async (req, res) => {
     res.status(500).send("Error saving user data");
   }
 });
+
+// **새로 추가된 라우트: 특정 동화 삭제**
+/**
+ * 특정 사용자의 동화를 삭제하는 라우트
+ * 클라이언트에서 idToken, uid, title을 받아 인증 후 삭제
+ */
+app.delete("/deleteFairyTale", async (req, res) => {
+  const { idToken, uid, title } = req.body; // 클라이언트에서 idToken, uid, title을 전송해야 함
+
+  if (!idToken || !uid || !title) {
+    return res.status(400).send("idToken, uid, and title are required");
+  }
+
+  try {
+    // idToken 검증
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const authenticatedUid = decodedToken.uid;
+
+    if (authenticatedUid !== uid) {
+      return res.status(403).send("UID mismatch");
+    }
+
+    // 동화 삭제
+    await deleteFairyTale(uid, title);
+    res.status(200).send("Fairy tale deleted successfully");
+  } catch (error) {
+    console.error("Error deleting fairy tale:", error);
+    res.status(500).send("Error deleting fairy tale");
+  }
+});
+
 // main스크린에서 동화제작 버튼을 눌렀을 시, controller.js의 함수를 가져와서 실행 후
 // display.html로 리다이렉트 하는 구문
-app.post('/generate', async (req, res) => {
+app.post("/generate", async (req, res) => {
   try {
     const result = await fairytale.processFairytaleData(req.body);
     // display.html로 리다이렉트하고, 생성된 데이터를 쿼리 파라미터로 전달합니다.
-    res.redirect(`/display.html?data=${encodeURIComponent(JSON.stringify(result))}`);
+    res.redirect(
+      `/display.html?data=${encodeURIComponent(JSON.stringify(result))}`
+    );
   } catch (error) {
-    console.error('Error processing fairytale data:', error);
-    res.status(500).send('Error processing fairytale data');
+    console.error("Error processing fairytale data:", error);
+    res.status(500).send("Error processing fairytale data");
   }
 });
 
