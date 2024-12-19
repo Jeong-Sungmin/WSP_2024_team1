@@ -43,6 +43,27 @@ async function saveUser(user) {
 }
 
 /**
+ * 사용자 특정 동화를 Realtime Database에서 삭제하는 함수
+ * @param {string} uid 사용자 UID
+ * @param {string} title 동화 제목
+ * @returns {Promise<void>}
+ */
+async function deleteFairyTale(uid, title) {
+  const path = `folks/${uid}/${title}`;
+  try {
+    console.log(`Attempting to delete fairy tale at path: ${path}`);
+    await db.ref(path).remove();
+    console.log(`Fairy tale '${title}' deleted for UID: ${uid}`);
+  } catch (error) {
+    console.error(
+      `Error deleting fairy tale '${title}' for UID ${uid}:`,
+      error
+    );
+    throw error;
+  }
+}
+
+/**
  * 데이터 생성 함수
  * @param {string} path DB 상의 경로 (예: 'folks/uid/title1')
  * @param {object} data 저장할 데이터 객체
@@ -113,6 +134,7 @@ async function deleteData(path) {
 
 module.exports = {
   saveUser,
+  deleteFairyTale, // 새로 추가된 함수
   createData,
   readData,
   updateData,
