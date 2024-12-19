@@ -158,6 +158,8 @@ app.post("/saveUser", async (req, res) => {
   } catch (error) {
     console.error("Error saving user data:", error);
     res.status(500).send("Error saving user data");
+  }
+});
 // main스크린에서 동화제작 버튼을 눌렀을 시, controller.js의 함수를 가져와서 실행 후
 // display.html로 리다이렉트 하는 구문
 app.post('/generate', async (req, res) => {
