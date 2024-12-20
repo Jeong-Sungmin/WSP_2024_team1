@@ -18,11 +18,11 @@ async function saveUser(user) {
     Restrict_make: "4", // 최대 생성 가능한 동화 개수 (필요 시 조정)
   };
 
-  // 특정 사용자를 'admin'으로 설정 (예: 특정 이메일)
-  const adminEmails = ["mis084110@gmail.com"]; // 관리자의 이메일 목록
-  if (adminEmails.includes(user.email)) {
-    userInfo.role = "admin";
-  }
+  // // 특정 사용자를 'admin'으로 설정 (예: 특정 이메일)
+  // const adminEmails = ["mis084110@gmail.com"]; // 관리자의 이메일 목록
+  // if (adminEmails.includes(user.email)) {
+  //   userInfo.role = "admin";
+  // }
 
   try {
     await db.ref(`users/${user.uid}`).set(userInfo);
