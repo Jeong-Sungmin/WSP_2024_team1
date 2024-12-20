@@ -367,9 +367,20 @@ app.get("/user/fairyTales", verifyToken, async (req, res) => {
 });
 
 // 메인스크린 동화제작 예시
-app.post("/generate", async (req, res) => {
+app.post("/generateExpert", async (req, res) => {
   try {
-    const result = await fairytale.processFairytaleData(req.body);
+    const result = await fairytale.processFairytaleDataExpert(req.body);
+    res.json(result);
+    console.log("generate complete");
+  } catch (error) {
+    console.error("Error processing fairy tale data:", error);
+    res.status(500).send("Error processing fairy tale data");
+  }
+});
+
+app.post("/generateBeginner", async (req, res) => {
+  try {
+    const result = await fairytale.processFairytaleDataBeginner(req.body);
     res.json(result);
     console.log("generate complete");
   } catch (error) {
