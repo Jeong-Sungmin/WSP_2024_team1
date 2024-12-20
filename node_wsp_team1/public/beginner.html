@@ -20,7 +20,7 @@
     </header>
     <div class="container">
         <h1>동화책 제작</h1>
-
+        <p id="status-message" style="text-align:center; font-weight:bold;">이 글귀가 보인다면 test중입니다.</p>
         <div class="attributes-section" id="attributes-section">
             <button class="random-button" id="random-button">랜덤 속성 지정</button>
 
@@ -237,6 +237,7 @@
     });
 
     createButton.addEventListener('click', () => {
+        const statusMessage = document.getElementById('status-message');
         const selectedValues = {};
         attributeGroups.forEach(group => {
             const selectedOption = document.querySelector(`input[name="${group.name}"]:checked`);
@@ -244,6 +245,8 @@
                 selectedValues[group.name] = selectedOption.value;
             }
         });
+        // 디버그용
+        statusMessage.innerText = "동화 제작이 시작되었습니다! 잠시만 기다려주세요...";
 
         const nameInput = document.getElementById('protagonist-name').value;
         selectedValues['protagonist-name'] = nameInput;
@@ -258,7 +261,30 @@
             selectedValues.characters.push({ name, gender, personality });
         });
 
-        alert('선택된 속성:\n' + JSON.stringify(selectedValues, null, 2));
+        fetch("/generateBeginner", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(selectedValues)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 동화 제작 완료 문구 표시
+            statusMessage.innerText = "동화 제작이 완료되었습니다!";
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            // 오류 문구 표시
+            statusMessage.innerText = "동화 제작 중 오류가 발생했습니다. 다시 시도해주세요.";
+        });
+
+        //alert('선택된 속성:\n' + JSON.stringify(selectedValues, null, 2));
     });
 });
 
