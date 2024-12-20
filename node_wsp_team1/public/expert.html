@@ -20,7 +20,7 @@
     <div class="container">
         <!-- 주제 문구 -->
         <h1>세상을 빛나게 만들 이야기를 만들어 주세요</h1>
-        
+        <p id="status-message" style="text-align:center; font-weight:bold;">이 글귀가 보인다면 test중입니다.</p>
         <!-- 텍스트 입력 폼 -->
         <form id="story-form">
             <label for="story-input">이야기 입력:</label>
@@ -41,31 +41,49 @@
             
             // 텍스트 입력값 가져오기
             const storyText = document.getElementById('story-input').value.trim();
-            
+
+            // 테스트용 상태메시지
+            const statusMessage = document.getElementById('status-message');
+
             // 입력값이 비어있는지 확인
             if (!storyText) {
                 alert('이야기를 입력해주세요.');
                 return;
             }
             
+            statusMessage.innerText = "동화 제작이 시작되었습니다! 잠시만 기다려주세요...";
+
             // JSON 객체 생성
             const jsonData = {
                 story: storyText
             };
             
+            fetch("/generate", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 동화 제작 완료 문구 표시
+                statusMessage.innerText = "동화 제작이 완료되었습니다!";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // 오류 문구 표시
+                statusMessage.innerText = "동화 제작 중 오류가 발생했습니다. 다시 시도해주세요.";
+            });
+
             // JSON 객체를 문자열로 변환하여 알림으로 표시
-            alert('생성된 JSON:\n' + JSON.stringify(jsonData, null, 2));
-            
-            // (선택 사항) JSON 파일로 다운로드
-            /*
-            const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'story.json';
-            a.click();
-            URL.revokeObjectURL(url);
-            */
+            //alert('생성된 JSON:\n' + JSON.stringify(jsonData, null, 2));
+
         });
     </script>
 </body>

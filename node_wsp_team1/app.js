@@ -370,9 +370,8 @@ app.get("/user/fairyTales", verifyToken, async (req, res) => {
 app.post("/generate", async (req, res) => {
   try {
     const result = await fairytale.processFairytaleData(req.body);
-    res.redirect(
-      `/display.html?data=${encodeURIComponent(JSON.stringify(result))}`
-    );
+    res.json(result);
+    console.log("generate complete");
   } catch (error) {
     console.error("Error processing fairy tale data:", error);
     res.status(500).send("Error processing fairy tale data");
