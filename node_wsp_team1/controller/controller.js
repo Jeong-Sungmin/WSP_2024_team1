@@ -21,7 +21,7 @@ async function processFairytaleDataExpert(receivedData) {
     HarmBlockThreshold,
   } = require("@google/generative-ai");
 
-  const apiKey = process.env.GENERATIVE_AI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   const genAI = new GoogleGenerativeAI(apiKey);
 
   const model = genAI.getGenerativeModel({
@@ -116,7 +116,7 @@ async function processFairytaleDataBeginner(receivedData) {
   let prompt = "";
   prompt = JSON.stringify(receivedData);
 
-  console.log(prompt)
+  console.log(prompt);
 
   // 1. Gemini를 통해 동화를 생성합니다.
   // 생성된 동화는 story라는 변수에 저장합니다.
@@ -145,14 +145,13 @@ async function processFairytaleDataBeginner(receivedData) {
     responseMimeType: "text/plain",
   };
 
-    const chatSession = model.startChat({
-      generationConfig,
-      history: [
-      ],
-    });
-  
-    const story = await chatSession.sendMessage(prompt);
-    console.log(story.response.text());
+  const chatSession = model.startChat({
+    generationConfig,
+    history: [],
+  });
+
+  const story = await chatSession.sendMessage(prompt);
+  console.log(story.response.text());
 
   // // 2. TTS API를 통해 음성 파일을 생성합니다.
   // // 사용자님이 개발하셔야 할 부분: TTS API를 사용하여 동화를 음성 파일로 변환하는 코드를 작성합니다.
