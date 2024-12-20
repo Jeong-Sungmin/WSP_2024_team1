@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>동화 생성기</title>
+    <!-- 사용자가 만든 CSS 파일을 링크합니다 -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>Tale Weaver</h1>
+        </div>
+        <nav class="button-navbar">
+            <a href="beginner.html" class="nav-button">입문가용</a>
+            <a href="expert.html" class="nav-button">전문가용</a>
+            <a href="board.html" class="nav-button">게시판</a>
+        </nav>
+    </header>
+    <div class="container">
+        <!-- 주제 문구 -->
+        <h1>세상을 빛나게 만들 이야기를 만들어 주세요</h1>
+        
+        <!-- 텍스트 입력 폼 -->
+        <form id="story-form">
+            <label for="story-input">이야기 입력:</label>
+            <textarea id="story-input" name="story" rows="10" cols="50" placeholder="여기에 이야기를 입력하세요" required></textarea>
+            <br>
+            <button type="submit">생성</button>
+        </form>
+        
+        <!-- 결과 표시 영역 (옵션) -->
+        <div class="result-section" id="result-section"></div>
+    </div>
+
+    <!-- 자바스크립트 (폼 제출 시 JSON 생성 및 알림 표시) -->
+    <script>
+        document.getElementById('story-form').addEventListener('submit', function(event) {
+            // 폼 제출을 일시 중지
+            event.preventDefault();
+            
+            // 텍스트 입력값 가져오기
+            const storyText = document.getElementById('story-input').value.trim();
+            
+            // 입력값이 비어있는지 확인
+            if (!storyText) {
+                alert('이야기를 입력해주세요.');
+                return;
+            }
+            
+            // JSON 객체 생성
+            const jsonData = {
+                story: storyText
+            };
+            
+            // JSON 객체를 문자열로 변환하여 알림으로 표시
+            alert('생성된 JSON:\n' + JSON.stringify(jsonData, null, 2));
+            
+            // (선택 사항) JSON 파일로 다운로드
+            /*
+            const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'story.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            */
+        });
+    </script>
+</body>
+</html>

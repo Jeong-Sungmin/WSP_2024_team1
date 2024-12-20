@@ -32,7 +32,7 @@ app.use(cookieParser()); // 쿠키 파싱 미들웨어 등록
 
 // /home 경로로 HTML 파일 서빙
 app.get("/home", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/testAboutMainScreen.html"));
+  res.sendFile(path.join(__dirname, "/public/board.html"));
 });
 
 // /login 경로로 HTML 파일 서빙
