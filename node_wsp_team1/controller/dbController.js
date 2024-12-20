@@ -118,10 +118,9 @@ async function getFairyTaleDetails(index) {
  * 동화를 생성하는 함수
  * @param {string} uid 사용자 UID
  * @param {string} inputData 동화 입력 데이터
- * @param {string} selectedType 동화 유형
  * @returns {Promise<number>} 생성된 동화의 인덱스
  */
-async function createFairyTale(uid, inputData, selectedType) {
+async function createFairyTale(uid, inputData) {
   const counterRef = db.ref("folks/counter");
   const transactionResult = await counterRef.transaction((currentValue) => {
     return (currentValue || 0) + 1;
@@ -133,7 +132,6 @@ async function createFairyTale(uid, inputData, selectedType) {
       uid: uid,
       createTime: admin.database.ServerValue.TIMESTAMP,
       inputdata: inputData,
-      selectedType: selectedType,
     };
     await db.ref(fairyTalePath).set(fairyTaleEntry);
     await db.ref(`users/${uid}/fairyTales/${newIndex}`).set(true);
