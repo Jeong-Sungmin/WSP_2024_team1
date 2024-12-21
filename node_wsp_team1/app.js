@@ -328,20 +328,25 @@ app.post("/generateExpert", verifyToken, async (req, res) => {
     const uid = req.user.uid;
     console.log(`Authenticated user UID: ${uid}`);
 
-    if (!inputData || !result) {
+    if (!inputData) {
       return res.status(400).send("inputData and result are required");
     }
-
     const index = await createFairyTale(uid, inputData);
     console.log("Fairy tale created with index:", index);
 
     const result = await fairytale.processFairytaleDataExpert(req.body, index);
+    if (!result) {
+      return res.status(400).send("inputData and result are required");
+    }
     console.log("Processed fairy tale result for /generateExpert:", result);
 
     const update = await updateFairyTale(index, result);
-    return res
-      .status(200)
-      .json({ message: "Fairy tale created successfully", index: index });
+
+    return res.status(200).json({
+      message: "Fairy tale created successfully",
+      index: index,
+      update,
+    });
   } catch (error) {
     console.error("Error in /generateExpert:", error);
 
@@ -368,7 +373,7 @@ app.post("/generateBeginner", verifyToken, async (req, res) => {
 
     //먼저 db 한번 등록후 counter 값 받아오기
 
-    if (!inputData || !result) {
+    if (!inputData) {
       return res.status(400).send("inputData and result are required");
     }
 
@@ -379,14 +384,21 @@ app.post("/generateBeginner", verifyToken, async (req, res) => {
     // 여기서 동화 및 이미지 , Tts 생성
     const result = await fairytale.processFairytaleDataBeginner(
       req.body,
-      counter
+      index
     );
+    if (!result) {
+      return res.status(400).send("inputData and result are required");
+    }
     console.log("Processed fairy tale result for /generateBeginner:", result);
 
     const update = await updateFairyTale(index, result);
     return res
       .status(200)
-      .json({ message: "Fairy tale created successfully", index: index });
+      .json({
+        message: "Fairy tale created successfully",
+        index: index,
+        update,
+      });
   } catch (error) {
     console.error("Error in /generateBeginner:", error); // 라우트 이름 수정
 

@@ -146,6 +146,7 @@ async function updateFairyTale(index, result) {
   const path = `folks/${index}`;
   const snapshot = await db.ref(path).once("value");
   const fairyTale = snapshot.val();
+  const output = {result}
   if (!fairyTale)
     throw new Error(`Fairy tale with index ${index} does not exist.`);
   await db.ref(path).update({ result });
