@@ -273,15 +273,16 @@ section {
 /* book-container 및 페이지 스타일 */
 .book-container {
   display: flex;
-  width: 80%;
+  width: 85%;
   height: 90vh;
   background-color: #fff;
   border: 2px solid #ccc;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin: 0 auto; /* 중앙 정렬 */
+  margin: 30px auto; /* 위쪽에 20px 여유 공간 추가, 중앙 정렬 유지 */
 }
+
 
 .page {
   width: 50%;

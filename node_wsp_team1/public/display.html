@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <div class="container book-container">
+    <div class="book-container">
         <!-- 왼쪽 페이지 (이미지 공간) -->
         <div class="page left-page">
             <img id="cover-image" class="image-placeholder" src="" alt="표지 이미지">
@@ -16,14 +16,14 @@
 
         <!-- 오른쪽 페이지 (동화 텍스트) -->
         <div class="page right-page">
-            <div id="fairy-tale-text" class="text-content"></div>
+            <div id="fairy-tale-text" class="fairy-tale"></div>
             <audio id="audio-player" controls style="display: none;"></audio>
             <div class="footer">
                 <div id="page-number" class="page-number"></div>
                 <div class="navigation-buttons">
-                    <button id="play-button" class="button play-button">재생</button>
-                    <button id="prev-button" class="button">◀ 이전</button>
-                    <button id="next-button" class="button">다음 ▶</button>
+                    <button id="play-button" class="play-button">재생</button>
+                    <button id="prev-button">◀ 이전</button>
+                    <button id="next-button">다음 ▶</button>
                 </div>
             </div>
         </div>
