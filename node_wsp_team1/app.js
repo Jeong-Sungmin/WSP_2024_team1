@@ -167,7 +167,9 @@ app.delete("/delete", verifyToken, async (req, res) => {
     res.status(500).send("Error deleting data");
   }
 });
-
+app.post("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
 // 사용자 데이터 저장 라우트
 app.post("/saveUser", async (req, res) => {
   const { idToken, user } = req.body;

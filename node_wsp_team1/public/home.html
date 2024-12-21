@@ -1,4 +1,4 @@
-<!-- public/homt.html -->
+<!-- public/home.html -->
 <!DOCTYPE html>
 <html lang="ko">
   <head>
@@ -102,7 +102,10 @@
     </div>
 
     <!-- 우상단 로그인/로그아웃 버튼 -->
-    <button id="authButton">로그인</button>
+    <!-- 로그인 상태에 따라 폼의 action을 변경 -->
+    <form id="authForm" method="POST" action="/login">
+      <button type="submit" id="authButton">로그인</button>
+    </form>
 
     <!-- 내비게이션 바 -->
     <nav class="button-navbar">
@@ -155,12 +158,11 @@
 
     <!-- Firebase 클라이언트 SDK 및 Firebase 설정 가져오기 -->
     <script type="module">
-      // FirebaseConfig.js에서 이미 Firebase 초기화 및 필요한 모든 기능을 export하고 있다고 가정
-
       // firebaseConfig.js에서 필요한 것들 import
       import { auth, onAuthStateChanged, signOut } from "./firebaseConfig.js";
 
       const authButton = document.getElementById("authButton");
+      const authForm = document.getElementById("authForm");
 
       // 사용자 인증 상태 변경 시 버튼 업데이트
       onAuthStateChanged(auth, (user) => {
@@ -168,12 +170,16 @@
           // 사용자가 로그인된 상태
           authButton.textContent = "로그아웃";
           authButton.classList.add("logout");
-          authButton.onclick = async () => {
+          authForm.removeAttribute("action"); // 폼의 action 제거
+
+          // 로그아웃 시 폼 제출 방지 및 JavaScript로 로그아웃 처리
+          authForm.onsubmit = async (e) => {
+            e.preventDefault(); // 기본 폼 제출 동작 방지
             try {
               // Firebase 로그아웃
               await signOut(auth);
 
-              // 서버의 세션 쿠키 삭제 (필요 시)
+              // 서버의 세션 쿠키 삭제
               await fetch("/logout", {
                 method: "POST",
                 credentials: "include",
@@ -183,6 +189,9 @@
               // 버튼 텍스트 변경
               authButton.textContent = "로그인";
               authButton.classList.remove("logout");
+
+              // 폼의 action을 다시 /login으로 설정
+              authForm.setAttribute("action", "/login");
             } catch (error) {
               console.error("로그아웃 중 오류 발생:", error);
               alert("로그아웃 중 오류가 발생했습니다.");
@@ -192,9 +201,8 @@
           // 사용자가 로그인되지 않은 상태
           authButton.textContent = "로그인";
           authButton.classList.remove("logout");
-          authButton.onclick = () => {
-            window.location.href = "/login"; // 서버 라우트에 맞게 수정
-          };
+          authForm.setAttribute("action", "/login"); // 폼의 action을 /login으로 설정
+          authForm.onsubmit = null; // 폼의 onsubmit 핸들러 제거
         }
       });
     </script>
