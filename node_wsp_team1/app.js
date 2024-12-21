@@ -7,7 +7,6 @@ const admin = require("./firebaseAdmin"); // Firebase Admin 초기화 모듈 불
 const {
   saveUser,
   createFairyTale,
-  addFairyTaleFields,
   createData,
   readData,
   updateData,
@@ -24,6 +23,7 @@ const { verifyToken, verifyAdmin } = require("./authMiddleware");
 
 const app = express();
 
+// 미들웨어 설정
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "private")));
 app.use(express.json());
@@ -69,14 +69,17 @@ app.post("/setToken", async (req, res) => {
       .once("value");
     if (!userSnapshot.exists()) {
       await saveUser(user);
+      console.log("새로운 사용자를 데이터베이스에 저장했습니다.");
+    } else {
+      console.log("사용자가 이미 존재합니다. 업데이트하지 않습니다.");
     }
 
     // HttpOnly 쿠키 설정
     res.cookie("idToken", idToken, {
       httpOnly: true,
-      secure: false, // HTTPS 환경에서는 true로 설정 권장
+      secure: process.env.NODE_ENV === "production", // HTTPS 환경에서는 true로 설정 권장
       sameSite: "Strict",
-      maxAge: 60 * 60 * 1000, // 1시간
+      maxAge: 4 * 60 * 60 * 1000, // 4시간
     });
 
     res.status(200).send("토큰이 쿠키에 설정되었습니다.");
@@ -111,6 +114,8 @@ app.get("/", (req, res) => {
       <body>
         <h1>Hello, Docker and Node.js!</h1>
         <button onclick="location.href='/home'">Go to Home</button>
+        <button onclick="location.href='/login'">Go to Login</button>
+        <button onclick="location.href='/admin'">Go to Admin</button>
       </body>
     </html>
   `);
@@ -123,6 +128,7 @@ app.post("/create", verifyToken, async (req, res) => {
     await createData(path, data);
     res.status(200).send("Data created successfully");
   } catch (error) {
+    console.error("Error creating data:", error);
     res.status(500).send("Error creating data");
   }
 });
@@ -138,6 +144,7 @@ app.get("/read", verifyToken, async (req, res) => {
       res.status(404).send("No data found at the specified path");
     }
   } catch (error) {
+    console.error("Error reading data:", error);
     res.status(500).send("Error reading data");
   }
 });
@@ -149,70 +156,8 @@ app.patch("/update", verifyToken, async (req, res) => {
     await updateData(path, updatedFields);
     res.status(200).send("Data updated successfully");
   } catch (error) {
+    console.error("Error updating data:", error);
     res.status(500).send("Error updating data");
-  }
-});
-
-// 사용자용: 초기 동화 생성 라우트
-app.post("/createFairyTale", verifyToken, async (req, res) => {
-  const { inputData, selectedType } = req.body;
-
-  if (!inputData || !selectedType) {
-    return res.status(400).send("inputData and selectedType are required");
-  }
-
-  try {
-    const uid = req.user.uid;
-    const index = await createFairyTale(uid, inputData, selectedType);
-    res
-      .status(200)
-      .json({ message: "Fairy tale created successfully", index: index });
-  } catch (error) {
-    console.error("Error creating fairy tale:", error);
-    res.status(500).send("Error creating fairy tale");
-  }
-});
-
-// 사용자용: 특정 동화에 필드 추가하는 라우트
-app.patch("/addFairyTaleFields/:index", verifyToken, async (req, res) => {
-  const index = parseInt(req.params.index, 10);
-  const { title, img, context, voice } = req.body;
-
-  if (isNaN(index)) {
-    return res.status(400).send("Valid fairy tale index is required");
-  }
-
-  if (!title && !img && !context && !voice) {
-    return res
-      .status(400)
-      .send("At least one field (title, img, context, voice) is required");
-  }
-
-  const fieldsToUpdate = {};
-  if (title) fieldsToUpdate.title = title;
-  if (img) fieldsToUpdate.img = img;
-  if (context) fieldsToUpdate.context = context;
-  if (voice) fieldsToUpdate.voice = voice;
-
-  try {
-    const fairyTale = await getFairyTaleDetails(index);
-    // req.user.role은 verifyToken/verifyAdmin에서 설정됨
-    if (fairyTale.uid !== req.user.uid && req.user.role !== "admin") {
-      return res
-        .status(403)
-        .send("Forbidden: You can only modify your own fairy tales");
-    }
-
-    await addFairyTaleFields(index, fieldsToUpdate);
-    res
-      .status(200)
-      .send(`Fields added successfully to fairy tale with index ${index}`);
-  } catch (error) {
-    console.error(
-      `Error adding fields to fairy tale with index ${index}:`,
-      error
-    );
-    res.status(500).send("Error adding fields to fairy tale");
   }
 });
 
@@ -223,10 +168,12 @@ app.delete("/delete", verifyToken, async (req, res) => {
     await deleteData(path);
     res.status(200).send("Data deleted successfully");
   } catch (error) {
+    console.error("Error deleting data:", error);
     res.status(500).send("Error deleting data");
   }
 });
 
+// 사용자 데이터 저장 라우트
 app.post("/saveUser", async (req, res) => {
   const { idToken, user } = req.body;
   if (!idToken || !user) {
@@ -266,6 +213,7 @@ app.get("/admin/users", verifyToken, verifyAdmin, async (req, res) => {
     const users = await getUsers(searchQuery);
     res.status(200).json(users);
   } catch (error) {
+    console.error("Error fetching users:", error);
     res.status(500).send("Error fetching users");
   }
 });
@@ -283,6 +231,7 @@ app.patch("/admin/users/:uid", verifyToken, verifyAdmin, async (req, res) => {
     await updateUser(uid, updatedData);
     res.status(200).send(`User data updated successfully for UID ${uid}`);
   } catch (error) {
+    console.error("Error updating user data:", error);
     res.status(500).send("Error updating user data");
   }
 });
@@ -367,25 +316,77 @@ app.get("/user/fairyTales", verifyToken, async (req, res) => {
 });
 
 // 메인스크린 동화제작 예시
-app.post("/generateExpert", async (req, res) => {
+app.post("/generateExpert", verifyToken, async (req, res) => {
   try {
+    const inputData = req.body;
+    console.log("Received inputData for /generateExpert:", inputData);
+
+    // `req.user`가 정의되어 있는지 확인
+    if (!req.user) {
+      console.warn("Unauthorized access: req.user is undefined");
+      return res.status(401).send("Unauthorized: User not authenticated");
+    }
+
+    const uid = req.user.uid;
+    console.log(`Authenticated user UID: ${uid}`);
+
     const result = await fairytale.processFairytaleDataExpert(req.body);
-    res.json(result);
-    console.log("generate complete");
+    console.log("Processed fairy tale result for /generateExpert:", result);
+
+    if (!inputData || !result) {
+      return res.status(400).send("inputData and result are required");
+    }
+
+    const index = await createFairyTale(uid, inputData, result);
+    console.log("Fairy tale created with index:", index);
+
+    return res
+      .status(200)
+      .json({ message: "Fairy tale created successfully", index: index });
   } catch (error) {
-    console.error("Error processing fairy tale data:", error);
-    res.status(500).send("Error processing fairy tale data");
+    console.error("Error in /generateExpert:", error);
+
+    // 이미 응답을 보냈는지 확인 후 에러 응답
+    if (!res.headersSent) {
+      return res.status(500).send("Error processing fairy tale data");
+    }
   }
 });
 
-app.post("/generateBeginner", async (req, res) => {
+app.post("/generateBeginner", verifyToken, async (req, res) => {
   try {
+    const inputData = req.body;
+    console.log("Received inputData for /generateBeginner:", inputData);
+
+    // `req.user`가 정의되어 있는지 확인
+    if (!req.user) {
+      console.warn("Unauthorized access: req.user is undefined");
+      return res.status(401).send("Unauthorized: User not authenticated");
+    }
+
+    const uid = req.user.uid;
+    console.log(`Authenticated user UID: ${uid}`);
+
     const result = await fairytale.processFairytaleDataBeginner(req.body);
-    res.json(result);
-    console.log("generate complete");
+    console.log("Processed fairy tale result for /generateBeginner:", result);
+
+    if (!inputData || !result) {
+      return res.status(400).send("inputData and result are required");
+    }
+
+    const index = await createFairyTale(uid, inputData, result);
+    console.log("Fairy tale created with index:", index);
+
+    return res
+      .status(200)
+      .json({ message: "Fairy tale created successfully", index: index });
   } catch (error) {
-    console.error("Error processing fairy tale data:", error);
-    res.status(500).send("Error processing fairy tale data");
+    console.error("Error in /generateBeginner:", error); // 라우트 이름 수정
+
+    // 이미 응답을 보냈는지 확인 후 에러 응답
+    if (!res.headersSent) {
+      return res.status(500).send("Error processing fairy tale data");
+    }
   }
 });
 

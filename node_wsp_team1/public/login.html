@@ -60,6 +60,7 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ idToken, user }),
+            credentials: "include", // 쿠키 전송을 위해 추가
           });
 
           if (!response.ok) {
@@ -77,8 +78,7 @@
         try {
           const protectedResponse = await fetch("/protected", {
             method: "GET",
-            // 쿠키를 통해 인증하므로 Authorization 헤더 없이도 가능
-            credentials: "include", // 쿠키 전송을 위해 필요할 수 있음
+            credentials: "include", // 쿠키 전송을 위해 필요
           });
 
           if (!protectedResponse.ok) {
@@ -154,6 +154,7 @@
           const idToken = await user.getIdToken();
 
           await setTokenOnServer(idToken, user);
+
           await checkUserRoleAndRedirect();
         } catch (error) {
           console.error(error);

@@ -106,7 +106,8 @@ async function processFairytaleDataExpert(receivedData) {
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
-    story: story,
+    story: story.response.text(),
+    //현재 story 가 함수 형태라 DB에 저장 안되서 story.response.text(); // 함수 호출 결과 문자열로 변환해야 올라갈 듯
     // imageFiles: imageFiles,
     // audioFiles: audioFiles,
   };
@@ -212,7 +213,7 @@ async function processFairytaleDataBeginner(receivedData) {
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
-    story: story,
+    story: story.response.text(),
     // imageFiles: imageFiles,
     // audioFiles: audioFiles,
   };

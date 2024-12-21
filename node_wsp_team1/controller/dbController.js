@@ -12,10 +12,11 @@ async function saveUser(user) {
 
   const userInfo = {
     email: user.email,
-    name: user.name,
+    name: user.displayName || "익명", // 이름이 없는 경우 '익명'으로 설정
     role: "user", // 기본 역할은 'user'
     uid: user.uid,
-    Restrict_make: "4", // 최대 생성 가능한 동화 개수 (필요 시 조정)
+    fairyTales: {}, // 사용자가 생성한 동화 목록
+    // Restrict_make: "4", // 최대 생성 가능한 동화 개수 (필요 시 조정)
   };
 
   // // 특정 사용자를 'admin'으로 설정 (예: 특정 이메일)
@@ -27,6 +28,7 @@ async function saveUser(user) {
   try {
     await db.ref(`users/${user.uid}`).set(userInfo);
     console.log(`UID: ${user.uid}의 사용자 데이터가 저장되었습니다.`);
+    console.log("저장된 사용자 정보:", userInfo);
   } catch (error) {
     console.error(`UID: ${user.uid}의 사용자 데이터 저장 중 오류:`, error);
     throw error;
@@ -120,7 +122,7 @@ async function getFairyTaleDetails(index) {
  * @param {string} inputData 동화 입력 데이터
  * @returns {Promise<number>} 생성된 동화의 인덱스
  */
-async function createFairyTale(uid, inputData) {
+async function createFairyTale(uid, inputData, result) {
   const counterRef = db.ref("folks/counter");
   const transactionResult = await counterRef.transaction((currentValue) => {
     return (currentValue || 0) + 1;
@@ -132,6 +134,8 @@ async function createFairyTale(uid, inputData) {
       uid: uid,
       createTime: admin.database.ServerValue.TIMESTAMP,
       inputdata: inputData,
+      outputdata: { result },
+      //outputdata {}안에 json 형태로 result가 들어가면 됨
     };
     await db.ref(fairyTalePath).set(fairyTaleEntry);
     await db.ref(`users/${uid}/fairyTales/${newIndex}`).set(true);
@@ -139,17 +143,6 @@ async function createFairyTale(uid, inputData) {
   } else {
     throw new Error("Transaction not committed");
   }
-}
-
-/**
- * 동화에 필드를 추가하는 함수
- * @param {number} index 동화 인덱스
- * @param {Object} fields 추가할 필드 객체
- * @returns {Promise<void>}
- */
-async function addFairyTaleFields(index, fields) {
-  const fairyTalePath = `folks/${index}`;
-  await db.ref(fairyTalePath).update(fields);
 }
 
 /**
@@ -195,7 +188,6 @@ async function getMyFairyTales(uid) {
 module.exports = {
   saveUser,
   createFairyTale,
-  addFairyTaleFields,
   createData,
   readData,
   updateData,
