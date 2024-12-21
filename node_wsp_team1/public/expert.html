@@ -5,6 +5,94 @@
     <title>동화 생성기</title>
     <!-- 사용자가 만든 CSS 파일을 링크합니다 -->
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 기존 스타일 유지 및 추가 */
+        .intro-container {
+          width: 80%;
+          max-width: 800px;
+          margin: 50px auto;
+          padding: 20px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          background-color: #cdc5c5;
+        }
+  
+        .intro-container h1 {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+  
+        .intro-container p {
+          line-height: 1.6;
+          margin-bottom: 15px;
+        }
+  
+        .intro-container ul {
+          list-style-type: disc;
+          padding-left: 20px;
+        }
+  
+        .intro-container a {
+          color: blue;
+          text-decoration: underline;
+        }
+  
+        .intro-container a:hover {
+          color: darkblue;
+        }
+  
+        /* 우상단 로그인/로그아웃 버튼 스타일 */
+        #authButton {
+          position: fixed; /* 고정 위치 */
+          top: 20px; /* 상단에서 20px */
+          right: 20px; /* 우측에서 20px */
+          background-color: #4caf50;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          font-size: 16px;
+          cursor: pointer;
+          border-radius: 5px;
+          z-index: 1000; /* 다른 요소보다 위에 표시 */
+          transition: background-color 0.3s, opacity 0.3s;
+        }
+  
+        #authButton.logout {
+          background-color: #f44336; /* 로그아웃 시 버튼 색상 변경 */
+        }
+  
+        #authButton:hover {
+          opacity: 0.8;
+        }
+  
+        /* 로고 및 내비게이션 간 간격 조정 */
+        .logo {
+          text-align: center;
+          margin-top: 80px; /* 버튼 높이에 맞춰 상단 마진 조정 */
+        }
+  
+        .button-navbar {
+          text-align: center;
+          margin-top: 20px;
+        }
+  
+        .nav-button {
+          display: inline-block;
+          padding: 10px 20px;
+          margin-right: 10px;
+          background-color: #555;
+          color: white;
+          text-decoration: none;
+          border-radius: 5px;
+          transition: background-color 0.3s;
+        }
+  
+        .nav-button:hover {
+          background-color: #777;
+        }
+        </style>
 </head>
 <body>
     <header class="header">
@@ -12,10 +100,14 @@
             <h1>Tale Weaver</h1>
         </div>
         <nav class="button-navbar">
-            <a href="beginner.html" class="nav-button" style="margin-right: 20px;">입문가용</a>
-            <a href="expert.html" class="nav-button" style="margin-right: 20px;">전문가용</a>
+            <a href="beginner.html" class="nav-button" style="margin-right: 20px"
+              >입문가용</a
+            >
+            <a href="expert.html" class="nav-button" style="margin-right: 20px"
+              >전문가용</a
+            >
             <a href="board.html" class="nav-button">게시판</a>
-        </nav>
+          </nav>
     </header>
     <div class="container">
         <!-- 주제 문구 -->
