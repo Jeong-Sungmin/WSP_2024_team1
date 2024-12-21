@@ -254,6 +254,23 @@ app.get("/user/fairyTales", verifyToken, async (req, res) => {
   }
 });
 
+// 사용자용: 자신의 특정 동화 삭제
+app.get("/user/fairyTales/:index", verifyToken, async (req, res) => {
+  const index = req.index;
+  //req로 받아온 index값을 통해 동화 삭제
+  if (isNaN(index)) {
+    return res.status(400).send("Valid fairy tale index is required");
+  }
+
+  try {
+    await deleteFairyTale(index);
+    res.status(200).send(`Fairy tale with index ${index} deleted successfully`);
+  } catch (error) {
+    console.error(`Error deleting fairy tale with index ${index}:`, error);
+    res.status(500).send("Error deleting fairy tale");
+  }
+});
+
 // 메인스크린 동화제작 예시
 app.post("/generateExpert", verifyToken, async (req, res) => {
   try {
