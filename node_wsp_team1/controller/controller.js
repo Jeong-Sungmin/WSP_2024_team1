@@ -1,5 +1,6 @@
 // 필요한 모듈들을 가져옵니다.
 
+const { Configuration, OpenAIApi } = require("openai");
 const googleTTS = require("google-tts-api");
 const fs = require("fs");
 const { spawn } = require("child_process");
@@ -161,7 +162,7 @@ async function textToSpeechForSections(sections) {
 // 동화를 제목 + 6 블럭으로 쪼갬
 function splitStoryIntoSections(story) {
   const sections = [];
-  const lines = story.split("\n").filter((line) => line.trim() !== ""); // 빈 줄 제거
+  const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
 
   // 제목 추출
   const title = lines[0].trim();
@@ -171,7 +172,7 @@ function splitStoryIntoSections(story) {
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.startsWith("block_")) {
+    if (line.startsWith('block_')) {
       if (currentSectionContent !== "") {
         sections.push(currentSectionContent);
         currentSectionContent = "";
