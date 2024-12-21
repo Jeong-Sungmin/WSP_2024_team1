@@ -1,5 +1,7 @@
 // controller/dbController.js
 const admin = require("../firebaseAdmin"); // Firebase Admin 초기화 모듈 불러오기
+const fs = require('fs').promises;
+const path = require('path');
 const db = admin.database();
 
 /**
@@ -178,6 +180,7 @@ async function deleteFairyTale(index) {
   if (!fairyTale)
     throw new Error(`Fairy tale with index ${index} does not exist.`);
   const uid = fairyTale.uid;
+  await fs.rm(path.join(__dirname, '..', 'public', `${index}`), { recursive: true, force: true });
   await db.ref(path).remove();
   await db.ref(`users/${uid}/fairyTales/${index}`).remove();
 }
