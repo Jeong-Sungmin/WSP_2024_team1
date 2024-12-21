@@ -56,7 +56,6 @@ async function getUsers(searchQuery) {
         users.push(user);
       }
     }
-
     return users;
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -80,26 +79,43 @@ async function updateUser(uid, updatedData) {
   }
 }
 
-/**
- * 특정 사용자의 동화 목록을 조회하는 함수
- * @param {string} uid 사용자 UID
- * @returns {Promise<Array>} 동화 목록 배열
+//**
+/* 특정 사용자의 동화 목록에서 각 동화의 story 값을 조회하는 함수
+ * @param {string} uid - 사용자 UID
+ * @returns {Promise<Array>} - 동화의 story 값 배열
  */
 async function getFairyTalesByUid(uid) {
-  const fairyTalesSnapshot = await db
-    .ref(`users/${uid}/fairyTales`)
-    .once("value");
-  const fairyTalesIndices = fairyTalesSnapshot.val();
-  if (!fairyTalesIndices) return [];
-  const indices = Object.keys(fairyTalesIndices);
-  const promises = indices.map((index) =>
-    db.ref(`folks/${index}`).once("value")
-  );
-  const snapshots = await Promise.all(promises);
-  return snapshots.map((snapshot) => ({
-    index: parseInt(snapshot.key, 10),
-    data: snapshot.val(),
-  }));
+  try {
+    // 1. 사용자의 동화 인덱스 조회
+    const fairyTalesSnapshot = await db
+      .ref(`users/${uid}/fairyTales`)
+      .once("value");
+    const fairyTalesIndices = fairyTalesSnapshot.val();
+
+    if (!fairyTalesIndices) return []; // 동화가 없을 경우 빈 배열 반환
+
+    const indices = Object.keys(fairyTalesIndices);
+
+    // 2. 각 인덱스에 해당하는 story 값 조회
+    const promises = indices.map((index) =>
+      db.ref(`folks/${index}/result/story`).once("value")
+    );
+
+    //  const snapshots = await Promise.all(promises);
+
+    //  // 3. story 값 추출 및 배열로 반환
+    //  const stories = snapshots
+    //    .map((snapshot, idx) => ({
+    //      index: indices[idx],
+    //      story: snapshot.val(),
+    //    }))
+    //    .filter(tale => tale.story !== null && tale.story !== undefined); // story가 존재하는 경우만 필터링
+
+    return promises;
+  } catch (error) {
+    console.error("Error in getFairyTalesByUid:", error);
+    throw error;
+  }
 }
 
 /**
@@ -148,12 +164,11 @@ async function updateFairyTale(index, result) {
   const path = `folks/${index}`;
   const snapshot = await db.ref(path).once("value");
   const fairyTale = snapshot.val();
-  const output = {result}
+  const output = { result };
   if (!fairyTale)
     throw new Error(`Fairy tale with index ${index} does not exist.`);
   await db.ref(path).update({ result });
 }
-
 
 //동화 삭제 함수
 async function deleteFairyTale(index) {
@@ -166,7 +181,6 @@ async function deleteFairyTale(index) {
   await db.ref(path).remove();
   await db.ref(`users/${uid}/fairyTales/${index}`).remove();
 }
-
 
 module.exports = {
   saveUser,

@@ -127,7 +127,7 @@ async function processFairytaleDataBeginner(receivedData, index) {
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
-    story: story.response.text(),
+    story: sections,
     // imageFiles: imageFiles,
     // audioFiles: audioFiles,
   };
@@ -166,7 +166,7 @@ async function textToSpeechForSections(sections, index) {
 // 동화를 제목 + 6 블럭으로 쪼갬
 function splitStoryIntoSections(story) {
   const sections = [];
-  const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
+  const lines = story.split("\n").filter((line) => line.trim() !== ""); // 빈 줄 제거
 
   // 제목 추출
   const title = lines[0].trim();
@@ -176,7 +176,7 @@ function splitStoryIntoSections(story) {
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.startsWith('block_')) {
+    if (line.startsWith("block_")) {
       if (currentSectionContent !== "") {
         sections.push(currentSectionContent);
         currentSectionContent = "";
@@ -200,11 +200,11 @@ async function makeImageWithOpenAI(sections, index) {
   });
   const dir = "../public/" + index;
   const openai = new OpenAIApi(configuration);
-  
+
   for (let i = 0; i < sections.length; i++) {
     const text = sections[i];
     const imagePath = path.join(__dirname, dir, `image${i}.png`);
-    
+
     try {
       // OpenAI API를 사용하여 이미지 생성
       const response = await openai.createImage({
@@ -213,25 +213,26 @@ async function makeImageWithOpenAI(sections, index) {
         n: 1,
         size: "1024x1024",
       });
-      
+
       const imageUrl = response.data.data[0].url;
       console.log(`이미지 URL: ${imageUrl}`);
 
       // axios를 사용하여 이미지 다운로드
-      const imageResponse = await axios.get(imageUrl, { responseType: 'stream' });
-      
+      const imageResponse = await axios.get(imageUrl, {
+        responseType: "stream",
+      });
+
       // 이미지 스트림을 파일로 저장
       const writer = fs.createWriteStream(imagePath);
       imageResponse.data.pipe(writer);
 
       // 파일 저장 완료를 기다림
       await new Promise((resolve, reject) => {
-        writer.on('finish', resolve);
-        writer.on('error', reject);
+        writer.on("finish", resolve);
+        writer.on("error", reject);
       });
 
       console.log(`이미지가 성공적으로 저장되었습니다: ${imagePath}`);
-      
     } catch (error) {
       console.error(`이미지 생성 또는 저장 중 오류 발생: ${error.message}`);
     }

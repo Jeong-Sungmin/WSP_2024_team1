@@ -246,7 +246,7 @@ app.delete(
 app.get("/user/fairyTales", verifyToken, async (req, res) => {
   const uid = req.user.uid;
   try {
-    const fairyTales = await getMyFairyTales(uid);
+    const fairyTales = await getFairyTalesByUid(uid);
     res.status(200).json(fairyTales);
   } catch (error) {
     console.error("Error fetching user's fairy tales:", error);
@@ -349,6 +349,7 @@ app.post("/generateBeginner", verifyToken, async (req, res) => {
     }
     console.log("Processed fairy tale result for /generateBeginner:", result);
 
+    //글 내용 입력
     const update = await updateFairyTale(index, result);
     return res.status(200).json({
       message: "Fairy tale created successfully",
