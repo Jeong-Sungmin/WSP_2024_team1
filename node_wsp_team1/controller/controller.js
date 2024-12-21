@@ -1,5 +1,6 @@
 // 필요한 모듈들을 가져옵니다.
 
+const { Configuration, OpenAIApi } = require("openai");
 const googleTTS = require("google-tts-api");
 const fs = require("fs");
 const { spawn } = require("child_process");
@@ -61,7 +62,7 @@ async function processFairytaleDataExpert(receivedData, index) {
 
   // // 3. Image API를 통해 이미지를 생성합니다.
 
-  // await makeImageWithOpenAI(sections);
+  await makeImageWithOpenAI(sections);
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
@@ -122,7 +123,7 @@ async function processFairytaleDataBeginner(receivedData, index) {
 
   // 3. Image API를 통해 이미지를 생성합니다.
 
-  // await makeImageWithOpenAI(sections);
+  await makeImageWithOpenAI(sections);
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
@@ -160,7 +161,7 @@ async function textToSpeechForSections(sections) {
 // 동화를 제목 + 6 블럭으로 쪼갬
 function splitStoryIntoSections(story) {
   const sections = [];
-  const lines = story.split("\n").filter((line) => line.trim() !== ""); // 빈 줄 제거
+  const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
 
   // 제목 추출
   const title = lines[0].trim();
@@ -170,7 +171,7 @@ function splitStoryIntoSections(story) {
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.startsWith("block_")) {
+    if (line.startsWith('block_')) {
       if (currentSectionContent !== "") {
         sections.push(currentSectionContent);
         currentSectionContent = "";
@@ -189,20 +190,46 @@ function splitStoryIntoSections(story) {
 }
 
 async function makeImageWithOpenAI(sections) {
-  const openai = new OpenAI();
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY, // 환경 변수에 API 키가 설정되어 있는지 확인하세요
+  });
 
+  const openai = new OpenAIApi(configuration);
+  
   for (let i = 0; i < sections.length; i++) {
     const text = sections[i];
     const imagePath = path.join(__dirname, "../public", `image${i}.png`);
-    const response = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: "다음에 내가 말하는 문장들을 동화풍으로 그려줘. " + text,
-      n: 1,
-      size: "1024x1024",
-    });
-    console.log(response.data[0].url);
-    const writer = fs.createWriteStream(imagePath);
-    response.data.pipe(writer);
+    
+    try {
+      // OpenAI API를 사용하여 이미지 생성
+      const response = await openai.createImage({
+        model: "dall-e-3",
+        prompt: "다음에 내가 말하는 문장들을 동화풍으로 그려줘. " + text,
+        n: 1,
+        size: "1024x1024",
+      });
+      
+      const imageUrl = response.data.data[0].url;
+      console.log(`이미지 URL: ${imageUrl}`);
+
+      // axios를 사용하여 이미지 다운로드
+      const imageResponse = await axios.get(imageUrl, { responseType: 'stream' });
+      
+      // 이미지 스트림을 파일로 저장
+      const writer = fs.createWriteStream(imagePath);
+      imageResponse.data.pipe(writer);
+
+      // 파일 저장 완료를 기다림
+      await new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
+
+      console.log(`이미지가 성공적으로 저장되었습니다: ${imagePath}`);
+      
+    } catch (error) {
+      console.error(`이미지 생성 또는 저장 중 오류 발생: ${error.message}`);
+    }
   }
 }
 
