@@ -1,6 +1,9 @@
 // 필요한 모듈들을 가져옵니다.
+const googleTTS = require("google-tts-api");
 const fs = require("fs");
 const { spawn } = require("child_process");
+const path = require("path");
+const axios = require("axios");
 
 // JSON 파싱을 위한 미들웨어를 설정합니다.
 //app.use(express.json());
@@ -47,12 +50,68 @@ async function processFairytaleDataExpert(receivedData) {
   const story = await chatSession.sendMessage(prompt);
   console.log(story.response.text());
 
-  // // 2. TTS API를 통해 음성 파일을 생성합니다.
-  // // 사용자님이 개발하셔야 할 부분: TTS API를 사용하여 동화를 음성 파일로 변환하는 코드를 작성합니다.
-  // // 생성된 음성 파일은 audioFile이라는 변수에 저장합니다. (예: audioFile = "audio/audio_1.mp3")
-  // // 예시:
-  // // const audioFile = generateAudioWithTTS(story);
-  // let audioFiles = []; // 임시로 빈 배열을 넣었습니다.
+  // 동화를 제목 + 6 블럭으로 쪼갬
+  function splitStoryIntoSections(story) {
+    const sections = [];
+    const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
+
+    // 제목 추출
+    const title = lines[0].trim();
+    sections.push(title);
+
+    let currentSectionContent = "";
+
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith('block_')) {
+        if (currentSectionContent !== "") {
+          sections.push(currentSectionContent);
+          currentSectionContent = "";
+        }
+      } else {
+        currentSectionContent += line + "\n";
+      }
+    }
+
+    // 마지막 섹션 추가
+    if (currentSectionContent !== "") {
+      sections.push(currentSectionContent);
+    }
+
+    return sections;
+  }
+
+  const sections = splitStoryIntoSections(story.response.text());
+
+  console.log(sections)
+
+  //  2. TTS API를 통해 음성 파일을 생성합니다.
+  async function textToSpeechForSections(sections) {
+    for (let i = 0; i < sections.length; i++) {
+      const text = sections[i];
+      const language = "ko"; // 언어 설정 (한국어: 'ko', 영어: 'en')
+      const ttsPath = path.join(__dirname, "../public", `tts${i}.mp3`);
+
+      // Google TTS로 MP3 URL 생성
+      const url = await googleTTS(text, language, 1);
+
+      // URL에서 MP3 파일 다운로드
+      const response = await axios({
+        url,
+        method: "GET",
+        responseType: "stream",
+      });
+
+      if(response){
+        console.log("tts success...");
+      }
+
+      const writer = fs.createWriteStream(ttsPath);
+      response.data.pipe(writer);
+    }
+  }
+
+  await textToSpeechForSections(sections);
 
   // // 3. Image API를 통해 이미지를 생성합니다.
   // function generateImagesWithPython(prompt, numImages, outputDir) {
@@ -107,7 +166,6 @@ async function processFairytaleDataExpert(receivedData) {
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
     story: story.response.text(),
-    //현재 story 가 함수 형태라 DB에 저장 안되서 story.response.text(); // 함수 호출 결과 문자열로 변환해야 올라갈 듯
     // imageFiles: imageFiles,
     // audioFiles: audioFiles,
   };
@@ -154,62 +212,69 @@ async function processFairytaleDataBeginner(receivedData) {
   const story = await chatSession.sendMessage(prompt);
   console.log(story.response.text());
 
-  // // 2. TTS API를 통해 음성 파일을 생성합니다.
-  // // 사용자님이 개발하셔야 할 부분: TTS API를 사용하여 동화를 음성 파일로 변환하는 코드를 작성합니다.
-  // // 생성된 음성 파일은 audioFile이라는 변수에 저장합니다. (예: audioFile = "audio/audio_1.mp3")
-  // // 예시:
-  // // const audioFile = generateAudioWithTTS(story);
-  // let audioFiles = []; // 임시로 빈 배열을 넣었습니다.
+  // 동화를 제목 + 6 블럭으로 쪼갬
+  function splitStoryIntoSections(story) {
+    const sections = [];
+    const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
 
-  // // 3. Image API를 통해 이미지를 생성합니다.
-  // function generateImagesWithPython(prompt, numImages, outputDir) {
-  //   return new Promise((resolve, reject) => {
-  //     const pythonProcess = spawn("python", [
-  //       "generate_images.py",
-  //       prompt,
-  //       numImages,
-  //       outputDir,
-  //     ]);
+    // 제목 추출
+    const title = lines[0].trim();
+    sections.push(title);
 
-  //     pythonProcess.stdout.on("data", (data) => {
-  //       const imagePaths = JSON.parse(data.toString());
-  //       resolve(imagePaths);
-  //     });
+    let currentSectionContent = "";
 
-  //     pythonProcess.stderr.on("data", (data) => {
-  //       console.error(`Python error: ${data}`);
-  //       reject(data.toString());
-  //     });
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith('block_')) {
+        if (currentSectionContent !== "") {
+          sections.push(currentSectionContent);
+          currentSectionContent = "";
+        }
+      } else {
+        currentSectionContent += line + "\n";
+      }
+    }
 
-  //     pythonProcess.on("close", (code) => {
-  //       if (code !== 0) {
-  //         reject(`Python process exited with code ${code}`);
-  //       }
-  //     });
-  //   });
-  // }
+    // 마지막 섹션 추가
+    if (currentSectionContent !== "") {
+      sections.push(currentSectionContent);
+    }
 
-  // const imageOutputDir = "image"; // 이미지를 저장할 폴더
+    return sections;
+  }
 
-  // // 표지 이미지 생성
-  // const coverImagePrompt = `Cover image for a fairytale titled: ${sections[0]}`;
-  // const coverImagePaths = await generateImagesWithPython(
-  //   coverImagePrompt,
-  //   1,
-  //   imageOutputDir
-  // );
-  // imageFiles.push(coverImagePaths[0]);
+  const sections = splitStoryIntoSections(story.response.text());
 
-  // // 각 섹션별 이미지 생성
-  // for (let i = 1; i < sections.length; i++) {
-  //   const sectionImagePrompt = `image related to: ${sections[i]}`;
-  //   const sectionImagePaths = await generateImagesWithPython(
-  //     sectionImagePrompt,
-  //     1,
-  //     imageOutputDir
-  //   );
-  //   imageFiles.push(sectionImagePaths[0]);
-  // }
+  console.log(sections)
+
+  //  2. TTS API를 통해 음성 파일을 생성합니다.
+  async function textToSpeechForSections(sections) {
+    for (let i = 0; i < sections.length; i++) {
+      const text = sections[i];
+      const language = "ko"; // 언어 설정 (한국어: 'ko', 영어: 'en')
+      const ttsPath = path.join(__dirname, "../public", `tts${i}.mp3`);
+
+      // Google TTS로 MP3 URL 생성
+      const url = await googleTTS(text, language, 1);
+
+      // URL에서 MP3 파일 다운로드
+      const response = await axios({
+        url,
+        method: "GET",
+        responseType: "stream",
+      });
+
+      if(response){
+        console.log("tts success...");
+      }
+
+      const writer = fs.createWriteStream(ttsPath);
+      response.data.pipe(writer);
+    }
+  }
+
+  await textToSpeechForSections(sections);
+  // 3. Image API를 통해 이미지를 생성합니다.
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
