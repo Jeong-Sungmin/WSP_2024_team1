@@ -1,0 +1,210 @@
+<!-- public/home.html -->
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tale Weaver Home</title>
+    <!-- 사용자가 만든 CSS 파일을 링크합니다 -->
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* 우상단 로그인/로그아웃 버튼 스타일 */
+      #authButton {
+        position: fixed; /* 고정 위치 */
+        top: 20px; /* 상단에서 20px */
+        right: 20px; /* 우측에서 20px */
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        z-index: 1000; /* 다른 요소보다 위에 표시 */
+        transition: background-color 0.3s, opacity 0.3s;
+      }
+
+      #authButton.logout {
+        background-color: #f44336; /* 로그아웃 시 버튼 색상 변경 */
+      }
+
+      #authButton:hover {
+        opacity: 0.8;
+      }
+
+      /* 로고 및 내비게이션 간 간격 조정 */
+      .logo {
+        text-align: center;
+        margin-top: 80px; /* 버튼 높이에 맞춰 상단 마진 조정 */
+      }
+
+      .button-navbar {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .nav-button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-right: 10px;
+        background-color: #555;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .nav-button:hover {
+        background-color: #777;
+      }
+
+      /* 소개 컨테이너 스타일 */
+      .intro-container {
+        width: 80%;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #cdc5c5;
+      }
+
+      .intro-container h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .intro-container p {
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      .intro-container ul {
+        list-style-type: disc;
+        padding-left: 20px;
+      }
+
+      .intro-container a {
+        color: blue;
+        text-decoration: underline;
+      }
+
+      .intro-container a:hover {
+        color: darkblue;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 로고 -->
+    <div class="logo">
+      <h1>Tale Weaver</h1>
+    </div>
+
+    <!-- 우상단 로그인/로그아웃 버튼 -->
+    <!-- 로그인 상태에 따라 폼의 action을 변경 -->
+    <form id="authForm" method="POST" action="/login">
+      <button type="submit" id="authButton">로그인</button>
+    </form>
+
+    <!-- 내비게이션 바 -->
+    <nav class="button-navbar">
+      <a href="beginner.html" class="nav-button">입문가용</a>
+      <a href="expert.html" class="nav-button">전문가용</a>
+      <a href="board.html" class="nav-button">게시판</a>
+    </nav>
+
+    <!-- 소개 컨테이너 -->
+    <div class="intro-container">
+      <p>
+        이 웹사이트는 사용자들이 창의적인 동화를 생성하고, 자신의 상상력을
+        발휘할 수 있는 플랫폼입니다. 저희는 최첨단 인공지능 기술을 활용하여
+        다양한 스타일과 난이도의 동화를 제공합니다.
+      </p>
+      <h2>주요 기능</h2>
+      <ul>
+        <li>
+          <strong>동화 생성:</strong> 초보자부터 전문가까지 다양한 난이도의
+          동화를 생성할 수 있습니다.
+        </li>
+        <li>
+          <strong>사용자 관리:</strong> 회원가입 및 로그인을 통해 개인화된
+          경험을 제공합니다.
+        </li>
+        <li>
+          <strong>관리자 페이지:</strong> 관리자 권한을 가진 사용자는 모든
+          사용자와 동화를 관리할 수 있습니다.
+        </li>
+        <li>
+          <strong>구글 로그인:</strong> 간편하게 구글 계정을 통해 로그인할 수
+          있습니다.
+        </li>
+      </ul>
+      <h2>사용 방법</h2>
+      <p>
+        <strong>회원가입:</strong> 새로운 계정을 생성하여 다양한 기능을 이용해
+        보세요. 이름, 이메일, 비밀번호를 입력하여 쉽게 가입할 수 있습니다.
+      </p>
+      <p>
+        <strong>로그인:</strong> 이미 계정이 있으신 분들은 이메일과 비밀번호를
+        입력하여 로그인할 수 있습니다. 구글 계정을 통해서도 로그인할 수
+        있습니다.
+      </p>
+      <p>
+        <strong>동화 생성:</strong> 로그인 후, 메인 화면에서 동화 생성 버튼을
+        클릭하여 원하는 주제와 스타일을 선택하고 동화를 생성하세요.
+      </p>
+    </div>
+
+    <!-- Firebase 클라이언트 SDK 및 Firebase 설정 가져오기 -->
+    <script type="module">
+      // firebaseConfig.js에서 필요한 것들 import
+      import { auth, onAuthStateChanged, signOut } from "./firebaseConfig.js";
+
+      const authButton = document.getElementById("authButton");
+      const authForm = document.getElementById("authForm");
+
+      // 사용자 인증 상태 변경 시 버튼 업데이트
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // 사용자가 로그인된 상태
+          authButton.textContent = "로그아웃";
+          authButton.classList.add("logout");
+          authForm.removeAttribute("action"); // 폼의 action 제거
+
+          // 로그아웃 시 폼 제출 방지 및 JavaScript로 로그아웃 처리
+          authForm.onsubmit = async (e) => {
+            e.preventDefault(); // 기본 폼 제출 동작 방지
+            try {
+              // Firebase 로그아웃
+              await signOut(auth);
+
+              // 서버의 세션 쿠키 삭제
+              await fetch("/logout", {
+                method: "POST",
+                credentials: "include",
+              });
+
+              console.log("사용자가 로그아웃되었습니다.");
+              // 버튼 텍스트 변경
+              authButton.textContent = "로그인";
+              authButton.classList.remove("logout");
+
+              // 폼의 action을 다시 /login으로 설정
+              authForm.setAttribute("action", "/login");
+            } catch (error) {
+              console.error("로그아웃 중 오류 발생:", error);
+              alert("로그아웃 중 오류가 발생했습니다.");
+            }
+          };
+        } else {
+          // 사용자가 로그인되지 않은 상태
+          authButton.textContent = "로그인";
+          authButton.classList.remove("logout");
+          authForm.setAttribute("action", "/login"); // 폼의 action을 /login으로 설정
+          authForm.onsubmit = null; // 폼의 onsubmit 핸들러 제거
+        }
+      });
+    </script>
+  </body>
+</html>

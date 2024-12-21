@@ -141,7 +141,7 @@ a::after {
 }
 
 a:hover::after {
-  width: 100%;
+  width: 65%;
 }
 
 /* 버튼 스타일 */
@@ -266,4 +266,127 @@ section {
     padding: 0.5em 1em;
     font-size: 0.9em;
   }
+}
+
+/* display.html 관련 스타일 시작 */
+
+/* book-container 및 페이지 스타일 */
+.book-container {
+  display: flex;
+  width: 85%;
+  height: 90vh;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 30px auto; /* 위쪽에 20px 여유 공간 추가, 중앙 정렬 유지 */
+}
+
+
+.page {
+  width: 50%;
+  padding: 20px;
+  position: relative;
+}
+
+.left-page {
+  background-color: #e6e6e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-placeholder {
+  width: 90%;
+  height: 90%;
+  border: 2px dashed #bbb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #bbb;
+  font-size: 1.2em;
+}
+
+.right-page {
+  padding: 40px 20px 60px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.fairy-tale {
+  font-size: 2em;
+  line-height: 1.4em;
+  max-height: 7em;
+  overflow: visible;
+  display: block;
+}
+
+/* footer 스타일 수정 */
+.footer {
+  position: absolute;
+  bottom: 10px; /* 여유 공간 확보 */
+  width: 100%; /* 부모 요소에 맞게 확장 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px; /* 패딩 감소 */
+  box-sizing: border-box;
+}
+
+.page-number {
+  font-size: 1.2em;
+  color: #555;
+}
+
+/* 버튼 컨테이너 */
+.navigation-buttons {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* 버튼 간 간격 감소 */
+}
+
+/* 버튼 스타일 */
+.navigation-buttons button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 8px 12px; /* 버튼 크기를 줄임 */
+  font-size: 0.9em; /* 글자 크기 조정 */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.navigation-buttons button:hover {
+  background-color: #2980b9;
+}
+
+/* 재생 버튼 스타일 */
+.play-button {
+  background-color: #2ecc71;
+  color: #fff;
+  border: none;
+  padding: 8px 12px; /* 버튼 크기를 줄임 */
+  font-size: 0.9em; /* 글자 크기 조정 */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.play-button:hover {
+  background-color: #27ae60;
+}
+
+.play-button::before {
+  content: '▶';
+  margin-right: 5px;
 }
