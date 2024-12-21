@@ -7,16 +7,11 @@ const admin = require("./firebaseAdmin"); // Firebase Admin 초기화 모듈 불
 const {
   saveUser,
   createFairyTale,
-  createData,
-  readData,
-  updateData,
-  deleteData,
   deleteFairyTale,
   getFairyTalesByUid,
   getFairyTaleDetails,
   getUsers,
   updateUser,
-  getMyFairyTales,
   updateFairyTale,
 } = require("./controller/dbController");
 const fairytale = require("./controller/controller");
@@ -117,60 +112,6 @@ app.post("/logout", (req, res) => {
   res.status(200).send("로그아웃 성공");
 });
 
-// 예시: 데이터 생성 라우트 (보호 필요)
-app.post("/create", verifyToken, async (req, res) => {
-  const { path, data } = req.body;
-  try {
-    await createData(path, data);
-    res.status(200).send("Data created successfully");
-  } catch (error) {
-    console.error("Error creating data:", error);
-    res.status(500).send("Error creating data");
-  }
-});
-
-// 예시: 데이터 읽기 라우트 (보호 필요)
-app.get("/read", verifyToken, async (req, res) => {
-  const { path } = req.query;
-  try {
-    const data = await readData(path);
-    if (data) {
-      res.status(200).json(data);
-    } else {
-      res.status(404).send("No data found at the specified path");
-    }
-  } catch (error) {
-    console.error("Error reading data:", error);
-    res.status(500).send("Error reading data");
-  }
-});
-
-// 예시: 데이터 업데이트 라우트 (보호 필요)
-app.patch("/update", verifyToken, async (req, res) => {
-  const { path, updatedFields } = req.body;
-  try {
-    await updateData(path, updatedFields);
-    res.status(200).send("Data updated successfully");
-  } catch (error) {
-    console.error("Error updating data:", error);
-    res.status(500).send("Error updating data");
-  }
-});
-
-// 데이터 삭제 라우트 (보호 필요)
-app.delete("/delete", verifyToken, async (req, res) => {
-  const { path } = req.body;
-  try {
-    await deleteData(path);
-    res.status(200).send("Data deleted successfully");
-  } catch (error) {
-    console.error("Error deleting data:", error);
-    res.status(500).send("Error deleting data");
-  }
-});
-app.post("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
-});
 // 사용자 데이터 저장 라우트
 app.post("/saveUser", async (req, res) => {
   const { idToken, user } = req.body;
@@ -392,13 +333,11 @@ app.post("/generateBeginner", verifyToken, async (req, res) => {
     console.log("Processed fairy tale result for /generateBeginner:", result);
 
     const update = await updateFairyTale(index, result);
-    return res
-      .status(200)
-      .json({
-        message: "Fairy tale created successfully",
-        index: index,
-        update,
-      });
+    return res.status(200).json({
+      message: "Fairy tale created successfully",
+      index: index,
+      update,
+    });
   } catch (error) {
     console.error("Error in /generateBeginner:", error); // 라우트 이름 수정
 

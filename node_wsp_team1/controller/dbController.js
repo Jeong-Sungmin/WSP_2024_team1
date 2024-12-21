@@ -142,6 +142,8 @@ async function createFairyTale(uid, inputData) {
     throw new Error("Transaction not committed");
   }
 }
+
+//동화 결과 업데이트  함수
 async function updateFairyTale(index, result) {
   const path = `folks/${index}`;
   const snapshot = await db.ref(path).once("value");
@@ -152,26 +154,8 @@ async function updateFairyTale(index, result) {
   await db.ref(path).update({ result });
 }
 
-/**
- * 기타 CRUD 함수들...
- */
-async function createData(path, data) {
-  await db.ref(path).set(data);
-}
 
-async function readData(path) {
-  const snapshot = await db.ref(path).once("value");
-  return snapshot.exists() ? snapshot.val() : null;
-}
-
-async function updateData(path, updatedFields) {
-  await db.ref(path).update(updatedFields);
-}
-
-async function deleteData(path) {
-  await db.ref(path).remove();
-}
-
+//동화 삭제 함수
 async function deleteFairyTale(index) {
   const path = `folks/${index}`;
   const snapshot = await db.ref(path).once("value");
@@ -183,27 +167,14 @@ async function deleteFairyTale(index) {
   await db.ref(`users/${uid}/fairyTales/${index}`).remove();
 }
 
-/**
- * 사용자용: 자신의 모든 동화를 조회하는 함수
- * @param {string} uid 사용자 UID
- * @returns {Promise<Array>} 동화 목록 배열
- */
-async function getMyFairyTales(uid) {
-  return getFairyTalesByUid(uid);
-}
 
 module.exports = {
   saveUser,
   createFairyTale,
-  createData,
-  readData,
-  updateData,
-  deleteData,
   deleteFairyTale,
   getFairyTalesByUid,
   getFairyTaleDetails,
   getUsers,
   updateUser,
-  getMyFairyTales,
   updateFairyTale,
 };
