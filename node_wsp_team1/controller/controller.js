@@ -56,13 +56,13 @@ async function processFairytaleDataExpert(receivedData, index) {
 
   console.log(sections);
 
-  //  2. TTS API를 통해 음성 파일을 생성합니다.
+  // 2. TTS API를 통해 음성 파일을 생성합니다.
 
-  await textToSpeechForSections(sections);
+  await textToSpeechForSections(sections, index);
 
-  // // 3. Image API를 통해 이미지를 생성합니다.
+  // 3. Image API를 통해 이미지를 생성합니다.
 
-  await makeImageWithOpenAI(sections);
+  await makeImageWithOpenAI(sections, index);
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
@@ -117,13 +117,13 @@ async function processFairytaleDataBeginner(receivedData, index) {
 
   console.log(sections);
 
-  //  2. TTS API를 통해 음성 파일을 생성합니다.
+  // 2. TTS API를 통해 음성 파일을 생성합니다.
 
-  await textToSpeechForSections(sections);
+  await textToSpeechForSections(sections, index);
 
   // 3. Image API를 통해 이미지를 생성합니다.
 
-  await makeImageWithOpenAI(sections);
+  await makeImageWithOpenAI(sections, index);
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
@@ -133,11 +133,16 @@ async function processFairytaleDataBeginner(receivedData, index) {
   };
 }
 
-async function textToSpeechForSections(sections) {
+async function textToSpeechForSections(sections, index) {
   for (let i = 0; i < sections.length; i++) {
     const text = sections[i];
+    const dir = "../public/" + index;
+    const outputDir = path.join(__dirname, dir);
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
     const language = "ko"; // 언어 설정 (한국어: 'ko', 영어: 'en')
-    const ttsPath = path.join(__dirname, "../public", `tts${i}.mp3`);
+    const ttsPath = path.join(__dirname, dir, `tts${i}.mp3`);
 
     // Google TTS로 MP3 URL 생성
     const url = await googleTTS(text, language, 1);
@@ -189,16 +194,16 @@ function splitStoryIntoSections(story) {
   return sections;
 }
 
-async function makeImageWithOpenAI(sections) {
+async function makeImageWithOpenAI(sections, index) {
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY, // 환경 변수에 API 키가 설정되어 있는지 확인하세요
   });
-
+  const dir = "../public/" + index;
   const openai = new OpenAIApi(configuration);
   
   for (let i = 0; i < sections.length; i++) {
     const text = sections[i];
-    const imagePath = path.join(__dirname, "../public", `image${i}.png`);
+    const imagePath = path.join(__dirname, dir, `image${i}.png`);
     
     try {
       // OpenAI API를 사용하여 이미지 생성

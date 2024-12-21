@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 });
 
 // /login 라우트 -> login.html
-app.get("/login", (req, res) => {
+app.post("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 app.get("/board", (req, res) => {
