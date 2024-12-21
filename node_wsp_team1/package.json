@@ -16,7 +16,8 @@
     "express": "^4.21.1",
     "firebase": "^11.0.2",
     "firebase-admin": "^13.0.1",
-    "google-tts-api": "^0.0.6"
+    "google-tts-api": "^0.0.6",
+    "openai": "^3.3.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"

@@ -1,4 +1,9 @@
 // 필요한 모듈들을 가져옵니다.
+<<<<<<< Updated upstream
+=======
+const { Configuration, OpenAIApi } = require("openai");
+const googleTTS = require("google-tts-api");
+>>>>>>> Stashed changes
 const fs = require("fs");
 const { spawn } = require("child_process");
 
@@ -6,8 +11,12 @@ const { spawn } = require("child_process");
 //app.use(express.json());
 
 // 이 함수는 /generate 경로로 POST 요청이 왔을 때 실행됩니다.
+<<<<<<< Updated upstream
 async function processFairytaleData(receivedData) {
   // 전문가용/입문자용 데이터 처리
+=======
+async function processFairytaleDataExpert(receivedData, index) {
+>>>>>>> Stashed changes
   let prompt = "";
   if (receivedData.type === "expert") {
     prompt = receivedData.prompt;
@@ -79,8 +88,12 @@ async function processFairytaleData(receivedData) {
       sections.push(currentSectionContent);
     }
 
+<<<<<<< Updated upstream
     return sections;
   }
+=======
+  await makeImageWithOpenAI(sections);
+>>>>>>> Stashed changes
 
   // 동화를 6개의 섹션으로 나눕니다.
   const sections = splitStoryIntoSections(story);
@@ -102,6 +115,7 @@ async function processFairytaleData(receivedData) {
         outputDir,
       ]);
 
+<<<<<<< Updated upstream
       pythonProcess.stdout.on("data", (data) => {
         const imagePaths = JSON.parse(data.toString());
         resolve(imagePaths);
@@ -146,6 +160,9 @@ async function processFairytaleData(receivedData) {
   // 사용자님이 개발하셔야 할 부분: 생성된 데이터를 세 번째 파일로 전송하는 코드를 작성합니다.
   // 예시:
   // sendDataToThirdFile(story, imageFiles, audioFiles);
+=======
+  await makeImageWithOpenAI(sections);
+>>>>>>> Stashed changes
 
   // 여기서는 생성된 데이터를 JSON 형태로 응답합니다.
   return {
@@ -156,4 +173,108 @@ async function processFairytaleData(receivedData) {
   };
 }
 
+<<<<<<< Updated upstream
 module.exports = { processFairytaleData };
+=======
+async function textToSpeechForSections(sections) {
+  for (let i = 0; i < sections.length; i++) {
+    const text = sections[i];
+    const language = "ko"; // 언어 설정 (한국어: 'ko', 영어: 'en')
+    const ttsPath = path.join(__dirname, "../public", `tts${i}.mp3`);
+
+    // Google TTS로 MP3 URL 생성
+    const url = await googleTTS(text, language, 1);
+
+    // URL에서 MP3 파일 다운로드
+    const response = await axios({
+      url,
+      method: "GET",
+      responseType: "stream",
+    });
+
+    if (response) {
+      console.log("tts success...");
+    }
+
+    const writer = fs.createWriteStream(ttsPath);
+    response.data.pipe(writer);
+  }
+}
+
+// 동화를 제목 + 6 블럭으로 쪼갬
+function splitStoryIntoSections(story) {
+  const sections = [];
+  const lines = story.split('\n').filter(line => line.trim() !== ''); // 빈 줄 제거
+
+  // 제목 추출
+  const title = lines[0].trim();
+  sections.push(title);
+
+  let currentSectionContent = "";
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith('block_')) {
+      if (currentSectionContent !== "") {
+        sections.push(currentSectionContent);
+        currentSectionContent = "";
+      }
+    } else {
+      currentSectionContent += line + "\n";
+    }
+  }
+
+  // 마지막 섹션 추가
+  if (currentSectionContent !== "") {
+    sections.push(currentSectionContent);
+  }
+
+  return sections;
+}
+
+async function makeImageWithOpenAI(sections) {
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY, // 환경 변수에 API 키가 설정되어 있는지 확인하세요
+  });
+
+  const openai = new OpenAIApi(configuration);
+  
+  for (let i = 0; i < sections.length; i++) {
+    const text = sections[i];
+    const imagePath = path.join(__dirname, "../public", `image${i}.png`);
+    
+    try {
+      // OpenAI API를 사용하여 이미지 생성
+      const response = await openai.createImage({
+        model: "dall-e-3",
+        prompt: "다음에 내가 말하는 문장들을 동화풍으로 그려줘. " + text,
+        n: 1,
+        size: "1024x1024",
+      });
+      
+      const imageUrl = response.data.data[0].url;
+      console.log(`이미지 URL: ${imageUrl}`);
+
+      // axios를 사용하여 이미지 다운로드
+      const imageResponse = await axios.get(imageUrl, { responseType: 'stream' });
+      
+      // 이미지 스트림을 파일로 저장
+      const writer = fs.createWriteStream(imagePath);
+      imageResponse.data.pipe(writer);
+
+      // 파일 저장 완료를 기다림
+      await new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
+
+      console.log(`이미지가 성공적으로 저장되었습니다: ${imagePath}`);
+      
+    } catch (error) {
+      console.error(`이미지 생성 또는 저장 중 오류 발생: ${error.message}`);
+    }
+  }
+}
+
+module.exports = { processFairytaleDataExpert, processFairytaleDataBeginner };
+>>>>>>> Stashed changes
