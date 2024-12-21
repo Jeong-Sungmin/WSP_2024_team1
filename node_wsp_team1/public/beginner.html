@@ -1,449 +1,354 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <title>동화책 제작</title>
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      /* 기존 스타일 유지 및 추가 */
-      .intro-container {
-        width: 80%;
-        max-width: 800px;
-        margin: 50px auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #cdc5c5;
-      }
 
-      .intro-container h1 {
-        text-align: center;
-        margin-bottom: 20px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <title>동화책 제작</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* 기존 스타일 유지 및 추가 */
+    .intro-container {
+      width: 80%;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #cdc5c5;
+    }
 
-      .intro-container p {
-        line-height: 1.6;
-        margin-bottom: 15px;
-      }
+    .intro-container h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-      .intro-container ul {
-        list-style-type: disc;
-        padding-left: 20px;
-      }
+    .intro-container p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
 
-      .intro-container a {
-        color: blue;
-        text-decoration: underline;
-      }
+    .intro-container ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
 
-      .intro-container a:hover {
-        color: darkblue;
-      }
+    .intro-container a {
+      color: blue;
+      text-decoration: underline;
+    }
 
-      /* 우상단 로그인/로그아웃 버튼 스타일 */
-      #authButton {
-        position: fixed; /* 고정 위치 */
-        top: 20px; /* 상단에서 20px */
-        right: 20px; /* 우측에서 20px */
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 5px;
-        z-index: 1000; /* 다른 요소보다 위에 표시 */
-        transition: background-color 0.3s, opacity 0.3s;
-      }
+    .intro-container a:hover {
+      color: darkblue;
+    }
 
-      #authButton.logout {
-        background-color: #f44336; /* 로그아웃 시 버튼 색상 변경 */
-      }
+    /* 우상단 로그인/로그아웃 버튼 스타일 */
+    #authButton {
+      position: fixed;
+      /* 고정 위치 */
+      top: 20px;
+      /* 상단에서 20px */
+      right: 20px;
+      /* 우측에서 20px */
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      z-index: 1000;
+      /* 다른 요소보다 위에 표시 */
+      transition: background-color 0.3s, opacity 0.3s;
+    }
 
-      #authButton:hover {
-        opacity: 0.8;
-      }
+    #authButton.logout {
+      background-color: #f44336;
+      /* 로그아웃 시 버튼 색상 변경 */
+    }
 
-      /* 로고 및 내비게이션 간 간격 조정 */
-      .logo {
-        text-align: center;
-        margin-top: 80px; /* 버튼 높이에 맞춰 상단 마진 조정 */
-      }
+    #authButton:hover {
+      opacity: 0.8;
+    }
 
-      .button-navbar {
-        text-align: center;
-        margin-top: 20px;
-      }
+    /* 로고 및 내비게이션 간 간격 조정 */
+    .logo {
+      text-align: center;
+      margin-top: 80px;
+      /* 버튼 높이에 맞춰 상단 마진 조정 */
+    }
 
-      .nav-button {
-        display: inline-block;
-        padding: 10px 20px;
-        margin-right: 10px;
-        background-color: #555;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-      }
+    .button-navbar {
+      text-align: center;
+      margin-top: 20px;
+    }
 
-      .nav-button:hover {
-        background-color: #777;
-      }
-      </style>
-  </head>
+    .nav-button {
+      display: inline-block;
+      padding: 10px 20px;
+      margin-right: 10px;
+      background-color: #555;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
 
-  <body>
-    <header class="header">
-      <div class="logo">
-        <h1>Tale Weaver</h1>
+    .nav-button:hover {
+      background-color: #777;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="logo">
+      <h1>Tale Weaver</h1>
+    </div>
+    <nav class="button-navbar">
+      <a href="beginner.html" class="nav-button" style="margin-right: 20px">입문가용</a>
+      <a href="expert.html" class="nav-button" style="margin-right: 20px">전문가용</a>
+      <a href="board.html" class="nav-button">게시판</a>
+    </nav>
+  </header>
+  <div class="container">
+    <h1>동화책 제작</h1>
+    <p id="status-message" style="text-align: center; font-weight: bold">
+      이 글귀가 보인다면 test중입니다.
+    </p>
+    <div class="attributes-section" id="attributes-section">
+      <button class="random-button" id="random-button">랜덤 속성 지정</button>
+
+      <div class="attribute-group">
+        <label>장르</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="genre" value="유머" />유머</label>
+          <label class="option"><input type="radio" name="genre" value="모험" />모험</label>
+          <label class="option"><input type="radio" name="genre" value="환상(판타지)" />환상(판타지)</label>
+          <label class="option"><input type="radio" name="genre" value="교훈(우화)" />교훈(우화)</label>
+          <label class="option"><input type="radio" name="genre" value="일상" />일상</label>
+          <label class="option"><input type="radio" name="genre" value="공포" />공포</label>
+        </div>
       </div>
-      <nav class="button-navbar">
-        <a href="beginner.html" class="nav-button" style="margin-right: 20px"
-          >입문가용</a
-        >
-        <a href="expert.html" class="nav-button" style="margin-right: 20px"
-          >전문가용</a
-        >
-        <a href="board.html" class="nav-button">게시판</a>
-      </nav>
-    </header>
-    <div class="container">
-      <h1>동화책 제작</h1>
-      <p id="status-message" style="text-align: center; font-weight: bold">
-        이 글귀가 보인다면 test중입니다.
-      </p>
-      <div class="attributes-section" id="attributes-section">
-        <button class="random-button" id="random-button">랜덤 속성 지정</button>
 
-        <div class="attribute-group">
-          <label>장르</label>
-          <div class="options">
-            <label class="option"
-              ><input type="radio" name="genre" value="유머" />유머</label
-            >
-            <label class="option"
-              ><input type="radio" name="genre" value="모험" />모험</label
-            >
-            <label class="option"
-              ><input
-                type="radio"
-                name="genre"
-                value="환상(판타지)"
-              />환상(판타지)</label
-            >
-            <label class="option"
-              ><input
-                type="radio"
-                name="genre"
-                value="교훈(우화)"
-              />교훈(우화)</label
-            >
-            <label class="option"
-              ><input type="radio" name="genre" value="일상" />일상</label
-            >
-            <label class="option"
-              ><input type="radio" name="genre" value="공포" />공포</label
-            >
-          </div>
+      <div class="attribute-group">
+        <label>시간적 배경</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="time" value="옛날 옛적" />옛날
+            옛적</label>
+          <label class="option"><input type="radio" name="time" value="밤" />밤</label>
+          <label class="option"><input type="radio" name="time" value="새벽" />새벽</label>
+          <label class="option"><input type="radio" name="time" value="해질녘" />해질녘</label>
+          <label class="option"><input type="radio" name="time" value="낮" />낮</label>
+          <label class="option"><input type="radio" name="time" value="현대" />현대</label>
+          <label class="option"><input type="radio" name="time" value="미래" />미래</label>
+        </div>
+      </div>
+
+      <div class="attribute-group">
+        <label>공간적 배경</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="space" value="숲" />숲</label>
+          <label class="option"><input type="radio" name="space" value="성" />성</label>
+          <label class="option"><input type="radio" name="space" value="마을" />마을</label>
+          <label class="option"><input type="radio" name="space" value="바다" />바다</label>
+          <label class="option"><input type="radio" name="space" value="섬" />섬</label>
+          <label class="option"><input type="radio" name="space" value="동굴" />동굴</label>
+          <label class="option"><input type="radio" name="space" value="시골" />시골</label>
+          <label class="option"><input type="radio" name="space" value="도시" />도시</label>
+          <label class="option"><input type="radio" name="space" value="우주" />우주</label>
+          <label class="option"><input type="radio" name="space" value="폐가" />폐가</label>
+          <label class="option"><input type="radio" name="space" value="하늘" />하늘</label>
+        </div>
+      </div>
+
+      <div class="attribute-group">
+        <label>결말</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="ending" value="새드엔딩" />새드엔딩</label>
+          <label class="option"><input type="radio" name="ending" value="해피엔딩" />해피엔딩</label>
+          <label class="option"><input type="radio" name="ending" value="배드엔딩" />배드엔딩</label>
+        </div>
+      </div>
+
+      <div class="attribute-group">
+        <label>주인공</label>
+
+        <!-- 이름 입력 -->
+        <div class="options">
+          <label for="protagonist-name">이름:</label>
+          <input type="text" id="protagonist-name" name="protagonist-name" placeholder="이름을 입력하세요" />
         </div>
 
-        <div class="attribute-group">
-          <label>시간적 배경</label>
-          <div class="options">
-            <label class="option"
-              ><input type="radio" name="time" value="옛날 옛적" />옛날
-              옛적</label
-            >
-            <label class="option"
-              ><input type="radio" name="time" value="밤" />밤</label
-            >
-            <label class="option"
-              ><input type="radio" name="time" value="새벽" />새벽</label
-            >
-            <label class="option"
-              ><input type="radio" name="time" value="해질녘" />해질녘</label
-            >
-            <label class="option"
-              ><input type="radio" name="time" value="낮" />낮</label
-            >
-            <label class="option"
-              ><input type="radio" name="time" value="현대" />현대</label
-            >
-            <label class="option"
-              ><input type="radio" name="time" value="미래" />미래</label
-            >
-          </div>
+        <!-- 성별 선택 -->
+        <div class="options">
+          <label>성별:</label>
+          <label class="option"><input type="radio" name="gender" value="남자" />남자</label>
+          <label class="option"><input type="radio" name="gender" value="여자" />여자</label>
         </div>
 
-        <div class="attribute-group">
-          <label>공간적 배경</label>
-          <div class="options">
-            <label class="option"
-              ><input type="radio" name="space" value="숲" />숲</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="성" />성</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="마을" />마을</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="바다" />바다</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="섬" />섬</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="동굴" />동굴</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="시골" />시골</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="도시" />도시</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="우주" />우주</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="폐가" />폐가</label
-            >
-            <label class="option"
-              ><input type="radio" name="space" value="하늘" />하늘</label
-            >
-          </div>
+        <!-- 성격 선택 -->
+        <div class="options">
+          <label>성격:</label>
+          <label class="option"><input type="radio" name="personality" value="용감한" />용감한</label>
+          <label class="option"><input type="radio" name="personality" value="착한" />착한</label>
+          <label class="option"><input type="radio" name="personality" value="호기심 많은" />호기심 많은</label>
+          <label class="option"><input type="radio" name="personality" value="똑똑한" />똑똑한</label>
+          <label class="option"><input type="radio" name="personality" value="장난끼 많은" />장난끼 많은</label>
         </div>
 
-        <div class="attribute-group">
-          <label>결말</label>
-          <div class="options">
-            <label class="option"
-              ><input
-                type="radio"
-                name="ending"
-                value="새드엔딩"
-              />새드엔딩</label
-            >
-            <label class="option"
-              ><input
-                type="radio"
-                name="ending"
-                value="해피엔딩"
-              />해피엔딩</label
-            >
-            <label class="option"
-              ><input
-                type="radio"
-                name="ending"
-                value="배드엔딩"
-              />배드엔딩</label
-            >
-          </div>
+        <!-- 나이 선택 -->
+        <div class="options">
+          <label>나이:</label>
+          <label class="option"><input type="radio" name="age" value="어린이" />어린이</label>
+          <label class="option"><input type="radio" name="age" value="청소년" />청소년</label>
+          <label class="option"><input type="radio" name="age" value="청년" />청년</label>
+          <label class="option"><input type="radio" name="age" value="중년" />중년</label>
+          <label class="option"><input type="radio" name="age" value="노인" />노인</label>
         </div>
+      </div>
 
-        <div class="attribute-group">
-          <label>주인공</label>
-
-          <!-- 이름 입력 -->
-          <div class="options">
-            <label for="protagonist-name">이름:</label>
-            <input
-              type="text"
-              id="protagonist-name"
-              name="protagonist-name"
-              placeholder="이름을 입력하세요"
-            />
-          </div>
-
-          <!-- 성별 선택 -->
-          <div class="options">
-            <label>성별:</label>
-            <label class="option"
-              ><input type="radio" name="gender" value="남자" />남자</label
-            >
-            <label class="option"
-              ><input type="radio" name="gender" value="여자" />여자</label
-            >
-          </div>
-
-          <!-- 성격 선택 -->
-          <div class="options">
-            <label>성격:</label>
-            <label class="option"
-              ><input
-                type="radio"
-                name="personality"
-                value="용감한"
-              />용감한</label
-            >
-            <label class="option"
-              ><input type="radio" name="personality" value="착한" />착한</label
-            >
-            <label class="option"
-              ><input
-                type="radio"
-                name="personality"
-                value="호기심 많은"
-              />호기심 많은</label
-            >
-            <label class="option"
-              ><input
-                type="radio"
-                name="personality"
-                value="똑똑한"
-              />똑똑한</label
-            >
-            <label class="option"
-              ><input
-                type="radio"
-                name="personality"
-                value="장난끼 많은"
-              />장난끼 많은</label
-            >
-          </div>
-
-          <!-- 나이 선택 -->
-          <div class="options">
-            <label>나이:</label>
-            <label class="option"
-              ><input type="radio" name="age" value="어린이" />어린이</label
-            >
-            <label class="option"
-              ><input type="radio" name="age" value="청소년" />청소년</label
-            >
-            <label class="option"
-              ><input type="radio" name="age" value="청년" />청년</label
-            >
-            <label class="option"
-              ><input type="radio" name="age" value="중년" />중년</label
-            >
-            <label class="option"
-              ><input type="radio" name="age" value="노인" />노인</label
-            >
-          </div>
+      <div class="attribute-group">
+        <label>주인공 이외 등장인물 수</label>
+        <div class="options">
+          <label class="option"><input type="radio" name="characters" value="1명" />1명</label>
+          <label class="option"><input type="radio" name="characters" value="2명" />2명</label>
+          <label class="option"><input type="radio" name="characters" value="3명" />3명</label>
+          <label class="option"><input type="radio" name="characters" value="4명" />4명</label>
         </div>
+      </div>
 
-        <div class="attribute-group">
-          <label>주인공 이외 등장인물 수</label>
-          <div class="options">
-            <label class="option"
-              ><input type="radio" name="characters" value="1명" />1명</label
-            >
-            <label class="option"
-              ><input type="radio" name="characters" value="2명" />2명</label
-            >
-            <label class="option"
-              ><input type="radio" name="characters" value="3명" />3명</label
-            >
-            <label class="option"
-              ><input type="radio" name="characters" value="4명" />4명</label
-            >
-          </div>
-        </div>
+      <div class="dynamic-characters" id="dynamic-characters"></div>
 
-        <div class="dynamic-characters" id="dynamic-characters"></div>
-
-        <div class="create-button">
-          <button id="create-button">동화 만들기</button>
-        </div>
+      <div class="create-button">
+        <button id="create-button">동화 만들기</button>
       </div>
     </div>
+  </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const randomButton = document.getElementById("random-button");
-        const createButton = document.getElementById("create-button");
-        const dynamicCharactersContainer =
-          document.getElementById("dynamic-characters"); // 동적 입력 필드 추가 컨테이너
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const randomButton = document.getElementById("random-button");
+      const createButton = document.getElementById("create-button");
+      const dynamicCharactersContainer =
+        document.getElementById("dynamic-characters"); // 동적 입력 필드 추가 컨테이너
 
-        const attributeGroups = [
-          {
-            name: "genre",
-            options: [
-              "유머",
-              "모험",
-              "환상(판타지)",
-              "교훈(우화)",
-              "일상",
-              "공포",
-            ],
-          },
-          {
-            name: "time",
-            options: [
-              "옛날 옛적",
-              "밤",
-              "새벽",
-              "해질녘",
-              "낮",
-              "현대",
-              "미래",
-            ],
-          },
-          {
-            name: "space",
-            options: [
-              "숲",
-              "성",
-              "마을",
-              "바다",
-              "섬",
-              "동굴",
-              "시골",
-              "도시",
-              "우주",
-              "폐가",
-              "하늘",
-            ],
-          },
-          { name: "ending", options: ["새드엔딩", "해피엔딩", "배드엔딩"] },
-          { name: "gender", options: ["남자", "여자"] },
-          {
-            name: "personality",
-            options: ["용감한", "착한", "호기심 많은", "똑똑한", "장난끼 많은"],
-          },
-          {
-            name: "age",
-            options: ["어린이", "청소년", "청년", "중년", "노인"],
-          },
-          { name: "characters", options: ["1명", "2명", "3명", "4명"] },
+      const attributeGroups = [
+        {
+          name: "genre",
+          options: [
+            "유머",
+            "모험",
+            "환상(판타지)",
+            "교훈(우화)",
+            "일상",
+            "공포",
+          ],
+        },
+        {
+          name: "time",
+          options: [
+            "옛날 옛적",
+            "밤",
+            "새벽",
+            "해질녘",
+            "낮",
+            "현대",
+            "미래",
+          ],
+        },
+        {
+          name: "space",
+          options: [
+            "숲",
+            "성",
+            "마을",
+            "바다",
+            "섬",
+            "동굴",
+            "시골",
+            "도시",
+            "우주",
+            "폐가",
+            "하늘",
+          ],
+        },
+        { name: "ending", options: ["새드엔딩", "해피엔딩", "배드엔딩"] },
+        { name: "gender", options: ["남자", "여자"] },
+        {
+          name: "personality",
+          options: ["용감한", "착한", "호기심 많은", "똑똑한", "장난끼 많은"],
+        },
+        {
+          name: "age",
+          options: ["어린이", "청소년", "청년", "중년", "노인"],
+        },
+        { name: "characters", options: ["1명", "2명", "3명", "4명"] },
+      ];
+
+      function getRandomElement(array) {
+        return array[Math.floor(Math.random() * array.length)];
+      }
+
+      function setRandomAttributes() {
+        // 주인공 및 기본 속성 랜덤 설정
+
+        const maleNameList = [
+          "알렉스", "리안", "제이드", "테오", "에반",
+          "카엘", "루크", "아서", "레온", "엘리오",
+          "오스카", "제라드", "피터", "루이", "윌리엄",
+          "사일러스", "다니엘", "라파엘", "빈센트", "마일로"
         ];
 
-        function getRandomElement(array) {
-          return array[Math.floor(Math.random() * array.length)];
+        const femaleNameList = [
+          "엘라", "루나", "소피아", "이벨린", "클라라",
+          "오로라", "비올라", "릴리", "세라피나", "아델",
+          "플로라", "베아트릭스", "이사벨", "로잘리", "셀레나",
+          "마르가렛", "카밀라", "미아", "아멜리아", "페넬로페"
+        ];
+
+        attributeGroups.forEach((group) => {
+          const randomValue = getRandomElement(group.options);
+          const input = document.querySelector(
+            `input[name="${group.name}"][value="${randomValue}"]`
+          );
+          if (input) {
+            input.checked = true;
+          }
+        });
+
+        //주인공 성별 추출
+        const protagonistGender = document.querySelector(
+          'input[name="gender"]:checked'
+        ).value;
+        let protagonistNameList = protagonistGender === "남자" ? maleNameList : femaleNameList;
+
+
+        const nameInput = document.getElementById("protagonist-name");
+        if (nameInput && protagonistNameList.length > 0) {
+          const randomIndex = Math.floor(Math.random() * protagonistNameList.length);
+          nameInput.value = protagonistNameList.splice(randomIndex, 1)[0]; // 이름 중복 방지
+        } else if (nameInput) {
+          nameInput.value = "기본이름"; // 이름 부족 시 기본 이름
         }
 
-        function setRandomAttributes() {
-          // 주인공 및 기본 속성 랜덤 설정
-          attributeGroups.forEach((group) => {
-            const randomValue = getRandomElement(group.options);
-            const input = document.querySelector(
-              `input[name="${group.name}"][value="${randomValue}"]`
-            );
-            if (input) {
-              input.checked = true;
-            }
-          });
-          const nameInput = document.getElementById("protagonist-name");
-          nameInput.value = `랜덤이름${Math.floor(Math.random() * 1000)}`;
 
-          // 주인공 이외 등장인물 수에 따라 동적 필드 생성 및 랜덤 속성 설정
-          const selectedCharactersCount = document.querySelector(
-            'input[name="characters"]:checked'
-          ).value;
-          const numberOfCharacters = parseInt(selectedCharactersCount);
-          generateDynamicCharacterFields(numberOfCharacters);
-          setRandomDynamicCharacterAttributes(numberOfCharacters);
-        }
+        // 주인공 이외 등장인물 수에 따라 동적 필드 생성 및 랜덤 속성 설정
+        const selectedCharactersCount = document.querySelector(
+          'input[name="characters"]:checked'
+        ).value;
+        const numberOfCharacters = parseInt(selectedCharactersCount);
+        generateDynamicCharacterFields(numberOfCharacters);
+        setRandomDynamicCharacterAttributes(numberOfCharacters,maleNameList,femaleNameList);
+      }
 
-        function generateDynamicCharacterFields(count) {
-          dynamicCharactersContainer.innerHTML = ""; // 기존 필드 초기화
-          for (let i = 1; i <= count; i++) {
-            const characterDiv = document.createElement("div");
-            characterDiv.classList.add("character-group");
-            characterDiv.innerHTML = `
+      function generateDynamicCharacterFields(count) {
+        dynamicCharactersContainer.innerHTML = ""; // 기존 필드 초기화
+        for (let i = 1; i <= count; i++) {
+          const characterDiv = document.createElement("div");
+          characterDiv.classList.add("character-group");
+          characterDiv.innerHTML = `
                 <h4>등장인물 ${i}</h4>
                 <label>이름:</label>
                 <input type="text" name="character-${i}-name" placeholder="등장인물 ${i}의 이름">
@@ -461,122 +366,140 @@
                     <label class="option"><input type="radio" name="character-${i}-personality" value="장난끼 많은">장난끼 많은</label>
                 </div>
             `;
-            dynamicCharactersContainer.appendChild(characterDiv);
+          dynamicCharactersContainer.appendChild(characterDiv);
+        }
+      }
+
+
+      // 랜덤 요소를 가져오는 함수
+      function getRandomElementAndRemove(array) {
+        const randomIndex = Math.floor(Math.random() * array.length);
+        return array.splice(randomIndex, 1)[0]; // 선택한 요소를 배열에서 제거
+      }
+
+      function setRandomDynamicCharacterAttributes(count,maleNameList,femaleNameList) {
+        // 남자와 여자 이름 배열
+
+
+        for (let i = 1; i <= count; i++) {
+          // 성별 랜덤 설정
+          const genderOptions = ["남자", "여자"];
+          const randomGender = genderOptions[Math.floor(Math.random() * genderOptions.length)];
+          const genderInput = document.querySelector(
+            `input[name="character-${i}-gender"][value="${randomGender}"]`
+          );
+          if (genderInput) {
+            genderInput.checked = true;
+          }
+
+          // 이름 리스트 선택 (성별에 따라)
+          const availableNames = randomGender === "남자" ? maleNameList : femaleNameList;
+
+          // 이름 랜덤 선택
+          const nameInput = document.querySelector(`input[name="character-${i}-name"]`);
+          if (nameInput && availableNames.length > 0) {
+            // 랜덤 이름 선택 및 해당 이름 제거
+            const randomIndex = Math.floor(Math.random() * availableNames.length);
+            nameInput.value = availableNames.splice(randomIndex, 1)[0];
+          } else if (nameInput) {
+            nameInput.value = "기본이름"; // 이름 부족 시 기본 이름
+          }
+
+          // 성격 랜덤 설정
+          const personalityOptions = [
+            "용감한",
+            "착한",
+            "호기심 많은",
+            "똑똑한",
+            "장난끼 많은",
+          ];
+          const randomPersonality =
+            personalityOptions[Math.floor(Math.random() * personalityOptions.length)];
+          const personalityInput = document.querySelector(
+            `input[name="character-${i}-personality"][value="${randomPersonality}"]`
+          );
+          if (personalityInput) {
+            personalityInput.checked = true;
           }
         }
+      }
 
-        function setRandomDynamicCharacterAttributes(count) {
-          for (let i = 1; i <= count; i++) {
-            // 이름 랜덤 생성
-            const nameInput = document.querySelector(
-              `input[name="character-${i}-name"]`
-            );
-            if (nameInput) {
-              nameInput.value = `랜덤캐릭터${Math.floor(Math.random() * 100)}`;
-            }
 
-            // 성별 랜덤 설정
-            const genderOptions = ["남자", "여자"];
-            const randomGender = getRandomElement(genderOptions);
-            const genderInput = document.querySelector(
-              `input[name="character-${i}-gender"][value="${randomGender}"]`
-            );
-            if (genderInput) {
-              genderInput.checked = true;
-            }
+      randomButton.addEventListener("click", setRandomAttributes);
 
-            // 성격 랜덤 설정
-            const personalityOptions = [
-              "용감한",
-              "착한",
-              "호기심 많은",
-              "똑똑한",
-              "장난끼 많은",
-            ];
-            const randomPersonality = getRandomElement(personalityOptions);
-            const personalityInput = document.querySelector(
-              `input[name="character-${i}-personality"][value="${randomPersonality}"]`
-            );
-            if (personalityInput) {
-              personalityInput.checked = true;
-            }
-          }
-        }
-
-        randomButton.addEventListener("click", setRandomAttributes);
-
-        // 등장인물 수 변경 이벤트 핸들러
-        const charactersRadios = document.querySelectorAll(
-          'input[name="characters"]'
-        );
-        charactersRadios.forEach((radio) => {
-          radio.addEventListener("change", function () {
-            const numberOfCharacters = parseInt(this.value); // 선택된 등장인물 수
-            generateDynamicCharacterFields(numberOfCharacters); // 동적으로 필드 생성
-          });
-        });
-
-        createButton.addEventListener("click", () => {
-          const statusMessage = document.getElementById("status-message");
-          const selectedValues = {};
-          attributeGroups.forEach((group) => {
-            const selectedOption = document.querySelector(
-              `input[name="${group.name}"]:checked`
-            );
-            if (selectedOption) {
-              selectedValues[group.name] = selectedOption.value;
-            }
-          });
-          // 디버그용
-          statusMessage.innerText =
-            "동화 제작이 시작되었습니다! 잠시만 기다려주세요...";
-
-          const nameInput = document.getElementById("protagonist-name").value;
-          selectedValues["protagonist-name"] = nameInput;
-
-          // 동적 등장인물 데이터 수집
-          const dynamicInputs = document.querySelectorAll(".character-group");
-          selectedValues.characters = [];
-          dynamicInputs.forEach((div, index) => {
-            const name = div.querySelector(
-              `input[name="character-${index + 1}-name"]`
-            ).value;
-            const gender = div.querySelector(
-              `input[name="character-${index + 1}-gender"]:checked`
-            ).value;
-            const personality = div.querySelector(
-              `input[name="character-${index + 1}-personality"]:checked`
-            ).value;
-            selectedValues.characters.push({ name, gender, personality });
-          });
-
-          fetch("/generateBeginner", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(selectedValues),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              // 동화 제작 완료 문구 표시
-              statusMessage.innerText = "동화 제작이 완료되었습니다!";
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              // 오류 문구 표시
-              statusMessage.innerText =
-                "동화 제작 중 오류가 발생했습니다. 다시 시도해주세요.";
-            });
-
-          //alert('선택된 속성:\n' + JSON.stringify(selectedValues, null, 2));
+      // 등장인물 수 변경 이벤트 핸들러
+      const charactersRadios = document.querySelectorAll(
+        'input[name="characters"]'
+      );
+      charactersRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          const numberOfCharacters = parseInt(this.value); // 선택된 등장인물 수
+          generateDynamicCharacterFields(numberOfCharacters); // 동적으로 필드 생성
         });
       });
-    </script>
-  </body>
+
+      createButton.addEventListener("click", () => {
+        const statusMessage = document.getElementById("status-message");
+        const selectedValues = {};
+        attributeGroups.forEach((group) => {
+          const selectedOption = document.querySelector(
+            `input[name="${group.name}"]:checked`
+          );
+          if (selectedOption) {
+            selectedValues[group.name] = selectedOption.value;
+          }
+        });
+        // 디버그용
+        statusMessage.innerText =
+          "동화 제작이 시작되었습니다! 잠시만 기다려주세요...";
+
+        const nameInput = document.getElementById("protagonist-name").value;
+        selectedValues["protagonist-name"] = nameInput;
+
+        // 동적 등장인물 데이터 수집
+        const dynamicInputs = document.querySelectorAll(".character-group");
+        selectedValues.characters = [];
+        dynamicInputs.forEach((div, index) => {
+          const name = div.querySelector(
+            `input[name="character-${index + 1}-name"]`
+          ).value;
+          const gender = div.querySelector(
+            `input[name="character-${index + 1}-gender"]:checked`
+          ).value;
+          const personality = div.querySelector(
+            `input[name="character-${index + 1}-personality"]:checked`
+          ).value;
+          selectedValues.characters.push({ name, gender, personality });
+        });
+
+        fetch("/generateBeginner", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(selectedValues),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // 동화 제작 완료 문구 표시
+            statusMessage.innerText = "동화 제작이 완료되었습니다!";
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // 오류 문구 표시
+            statusMessage.innerText =
+              "동화 제작 중 오류가 발생했습니다. 다시 시도해주세요.";
+          });
+
+        //alert('선택된 속성:\n' + JSON.stringify(selectedValues, null, 2));
+      });
+    });
+  </script>
+</body>
+
 </html>
