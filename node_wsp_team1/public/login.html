@@ -5,11 +5,62 @@
     <meta charset="UTF-8" />
     <title>로그인 및 회원가입 페이지</title>
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* 간단한 스타일 추가 (필요 시 제거 가능) */
+      .auth-container {
+        width: 300px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .auth-container input {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        box-sizing: border-box;
+      }
+
+      .auth-container button {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        cursor: pointer;
+      }
+
+      .google-btn {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+      }
+
+      .error-message {
+        color: red;
+        margin-bottom: 10px;
+      }
+
+      .toggle-link {
+        text-align: center;
+      }
+
+      .toggle-link a {
+        cursor: pointer;
+        color: blue;
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
     <div class="auth-container">
       <h2 id="form-title">로그인</h2>
       <div id="error" class="error-message"></div>
+
+      <!-- 이름 입력 필드 추가 (초기에는 숨김) -->
+      <div id="name-container" style="display: none">
+        <input type="text" id="name" placeholder="이름" />
+      </div>
+
       <input type="email" id="email" placeholder="이메일" required />
       <input type="password" id="password" placeholder="비밀번호" required />
       <button id="authBtn">로그인</button>
@@ -35,6 +86,8 @@
       const toggleLink = document.getElementById("toggleLink");
       const toggleText = document.getElementById("toggleText");
       const formTitle = document.getElementById("form-title");
+      const nameContainer = document.getElementById("name-container");
+      const nameInput = document.getElementById("name");
 
       let isLogin = true;
 
@@ -45,21 +98,23 @@
           authBtn.textContent = "로그인";
           toggleText.textContent = "계정이 없으신가요?";
           toggleLink.textContent = "회원가입";
+          nameContainer.style.display = "none"; // 이름 필드 숨김
         } else {
           formTitle.textContent = "회원가입";
           authBtn.textContent = "회원가입";
           toggleText.textContent = "이미 계정이 있으신가요?";
           toggleLink.textContent = "로그인";
+          nameContainer.style.display = "block"; // 이름 필드 표시
         }
         errorDiv.textContent = "";
       });
 
-      async function setTokenOnServer(idToken, user) {
+      async function setTokenOnServer(idToken, user, name = "") {
         try {
           const response = await fetch("/setToken", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idToken, user }),
+            body: JSON.stringify({ idToken, user, name }), // 이름 추가
             credentials: "include", // 쿠키 전송을 위해 추가
           });
 
@@ -105,9 +160,12 @@
       authBtn.addEventListener("click", async () => {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
+        const name = nameInput.value.trim(); // 이름 값 가져오기
 
-        if (!email || !password) {
-          errorDiv.textContent = "이메일과 비밀번호를 입력해주세요.";
+        if (!email || !password || (!isLogin && !name)) {
+          errorDiv.textContent = isLogin
+            ? "이메일과 비밀번호를 입력해주세요."
+            : "이메일, 비밀번호, 이름을 입력해주세요.";
           return;
         }
 
@@ -130,8 +188,24 @@
           const user = userCredential.user;
           const idToken = await user.getIdToken();
 
-          await setTokenOnServer(idToken, user);
-          await checkUserRoleAndRedirect();
+          if (isLogin) {
+            await setTokenOnServer(idToken, user);
+            await checkUserRoleAndRedirect();
+          } else {
+            // 회원가입 후 로그인 화면으로 리디렉션
+            await setTokenOnServer(idToken, user, name);
+            alert("회원가입이 완료되었습니다. 로그인 화면으로 돌아갑니다.");
+            // 폼을 로그인 모드로 전환
+            isLogin = true;
+            formTitle.textContent = "로그인";
+            authBtn.textContent = "로그인";
+            toggleText.textContent = "계정이 없으신가요?";
+            toggleLink.textContent = "회원가입";
+            nameContainer.style.display = "none";
+            nameInput.value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
+          }
         } catch (error) {
           console.error(error);
           if (isLogin) {
@@ -140,6 +214,9 @@
             if (error.code === "auth/email-already-in-use") {
               errorDiv.textContent =
                 "이미 사용 중인 이메일입니다. 다른 이메일을 사용하세요.";
+            } else if (error.code === "auth/weak-password") {
+              errorDiv.textContent =
+                "비밀번호가 너무 약합니다. 6자리 이상으로 설정해주세요.";
             } else {
               errorDiv.textContent = "회원가입 실패: " + error.message;
             }
