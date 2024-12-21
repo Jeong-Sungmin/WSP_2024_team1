@@ -122,7 +122,7 @@ async function getFairyTaleDetails(index) {
  * @param {string} inputData 동화 입력 데이터
  * @returns {Promise<number>} 생성된 동화의 인덱스
  */
-async function createFairyTale(uid, inputData, result) {
+async function createFairyTale(uid, inputData) {
   const counterRef = db.ref("folks/counter");
   const transactionResult = await counterRef.transaction((currentValue) => {
     return (currentValue || 0) + 1;
@@ -134,8 +134,6 @@ async function createFairyTale(uid, inputData, result) {
       uid: uid,
       createTime: admin.database.ServerValue.TIMESTAMP,
       inputdata: inputData,
-      outputdata: { result },
-      //outputdata {}안에 json 형태로 result가 들어가면 됨
     };
     await db.ref(fairyTalePath).set(fairyTaleEntry);
     await db.ref(`users/${uid}/fairyTales/${newIndex}`).set(true);
@@ -143,6 +141,14 @@ async function createFairyTale(uid, inputData, result) {
   } else {
     throw new Error("Transaction not committed");
   }
+}
+async function updateFairyTale(index, result) {
+  const path = `folks/${index}`;
+  const snapshot = await db.ref(path).once("value");
+  const fairyTale = snapshot.val();
+  if (!fairyTale)
+    throw new Error(`Fairy tale with index ${index} does not exist.`);
+  await db.ref(path).update({ result });
 }
 
 /**
@@ -198,4 +204,5 @@ module.exports = {
   getUsers,
   updateUser,
   getMyFairyTales,
+  updateFairyTale,
 };

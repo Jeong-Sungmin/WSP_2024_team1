@@ -17,6 +17,7 @@ const {
   getUsers,
   updateUser,
   getMyFairyTales,
+  updateFairyTale,
 } = require("./controller/dbController");
 const fairytale = require("./controller/controller");
 const { verifyToken, verifyAdmin } = require("./authMiddleware");
@@ -327,16 +328,17 @@ app.post("/generateExpert", verifyToken, async (req, res) => {
     const uid = req.user.uid;
     console.log(`Authenticated user UID: ${uid}`);
 
-    const result = await fairytale.processFairytaleDataExpert(req.body);
-    console.log("Processed fairy tale result for /generateExpert:", result);
-
     if (!inputData || !result) {
       return res.status(400).send("inputData and result are required");
     }
 
-    const index = await createFairyTale(uid, inputData, result);
+    const index = await createFairyTale(uid, inputData);
     console.log("Fairy tale created with index:", index);
 
+    const result = await fairytale.processFairytaleDataExpert(req.body, index);
+    console.log("Processed fairy tale result for /generateExpert:", result);
+
+    const update = await updateFairyTale(index, result);
     return res
       .status(200)
       .json({ message: "Fairy tale created successfully", index: index });
@@ -364,16 +366,24 @@ app.post("/generateBeginner", verifyToken, async (req, res) => {
     const uid = req.user.uid;
     console.log(`Authenticated user UID: ${uid}`);
 
-    const result = await fairytale.processFairytaleDataBeginner(req.body);
-    console.log("Processed fairy tale result for /generateBeginner:", result);
+    //먼저 db 한번 등록후 counter 값 받아오기
 
     if (!inputData || !result) {
       return res.status(400).send("inputData and result are required");
     }
 
-    const index = await createFairyTale(uid, inputData, result);
+    //여기서 db 1차 등록
+    const index = await createFairyTale(uid, inputData);
     console.log("Fairy tale created with index:", index);
 
+    // 여기서 동화 및 이미지 , Tts 생성
+    const result = await fairytale.processFairytaleDataBeginner(
+      req.body,
+      counter
+    );
+    console.log("Processed fairy tale result for /generateBeginner:", result);
+
+    const update = await updateFairyTale(index, result);
     return res
       .status(200)
       .json({ message: "Fairy tale created successfully", index: index });
