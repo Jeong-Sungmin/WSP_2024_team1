@@ -30,20 +30,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // 쿠키 파싱 미들웨어 등록
 
-// /home 경로로 HTML 파일 서빙
-app.get("/home", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/board.html"));
+// 기본 라우트
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "home.html"));
 });
 
-// /login 경로로 HTML 파일 서빙
+// /login 라우트 -> login.html
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/login.html"));
+  res.sendFile(path.join(__dirname, "public", "login.html"));
 });
-
+app.get("/board", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "board.html"));
+});
 // 관리자 페이지 라우트
 // verifyToken, verifyAdmin 미들웨어 통해 인증 및 권한 체크 후 admin.html 서빙
 app.get("/admin", verifyToken, verifyAdmin, (req, res) => {
-  res.sendFile(path.join(__dirname, "/private/admin.html"));
+  res.sendFile(path.join(__dirname, "private", "admin.html"));
 });
 
 // 로그인/회원가입/구글 로그인 성공 시 토큰을 쿠키에 설정하는 라우트
@@ -104,21 +106,14 @@ app.get("/protected", verifyToken, async (req, res) => {
   }
 });
 
-// 기본 라우트
-app.get("/", (req, res) => {
-  res.send(`
-    <html>
-      <head>
-        <title>Home Page</title>
-      </head>
-      <body>
-        <h1>Hello, Docker and Node.js!</h1>
-        <button onclick="location.href='/home'">Go to Home</button>
-        <button onclick="location.href='/login'">Go to Login</button>
-        <button onclick="location.href='/admin'">Go to Admin</button>
-      </body>
-    </html>
-  `);
+// 로그아웃 라우트: 세션 쿠키 삭제
+app.post("/logout", (req, res) => {
+  res.clearCookie("idToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
+  res.status(200).send("로그아웃 성공");
 });
 
 // 예시: 데이터 생성 라우트 (보호 필요)
