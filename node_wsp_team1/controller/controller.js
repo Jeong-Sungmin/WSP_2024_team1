@@ -6,7 +6,6 @@ const fs = require("fs");
 const { spawn } = require("child_process");
 const path = require("path");
 const axios = require("axios");
-const { Configuration, OpenAIApi } = require('openai');
 
 // JSON 파싱을 위한 미들웨어를 설정합니다.
 //app.use(express.json());
