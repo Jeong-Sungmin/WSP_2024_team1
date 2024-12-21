@@ -255,7 +255,7 @@ app.get("/user/fairyTales", verifyToken, async (req, res) => {
 });
 
 // 사용자용: 자신의 특정 동화 삭제
-app.get("/user/fairyTales/:index", verifyToken, async (req, res) => {
+app.delete("/user/fairyTales/:index", verifyToken, async (req, res) => {
   const index = req.index;
   //req로 받아온 index값을 통해 동화 삭제
   if (isNaN(index)) {
